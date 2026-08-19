@@ -53,6 +53,11 @@ public class Xian {
                     Task t;
                     if(command.equals("todo")){
                         t = new Todo(remainder);
+                    }else if(command.equals("deadline")){
+                        String[] task_date = remainder.split(" /by ");
+                        String task = task_date[0];
+                        String by = task_date[1];
+                        t = new Deadline(task, by);
                     }else{
                         continue;
                     }

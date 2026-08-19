@@ -40,7 +40,14 @@ public class Xian {
                     t.mark();
 
                     System.out.println("\tNice! I've marked this task as done: ");
-                    System.out.println("\t" + t);
+                    System.out.println("\t " + t + "\n");
+                }else if(command.equals("unmark")){
+                    int idx = Integer.parseInt(parts[1]);
+                    Task t = tasks.get(idx - 1);
+                    t.unmark();
+
+                    System.out.println("\tOK, I've marked this task as not done yet: ");
+                    System.out.println("\t " + t + "\n");
                 }else{
                     Task t = new Task(input);
                     tasks.add(t);

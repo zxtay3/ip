@@ -31,8 +31,9 @@ public class Xian {
                 }
                 System.out.println();
             }else{
-                String[] parts = input.split(" ");
+                String[] parts = input.split(" ", 2);
                 String command = parts[0];
+                String remainder = parts[1];
 
                 if(command.equals("mark")){
                     int idx = Integer.parseInt(parts[1]);
@@ -49,9 +50,16 @@ public class Xian {
                     System.out.println("\tOK, I've marked this task as not done yet: ");
                     System.out.println("\t " + t + "\n");
                 }else{
-                    Task t = new Task(input);
+                    Task t;
+                    if(command.equals("todo")){
+                        t = new Todo(remainder);
+                    }else{
+                        continue;
+                    }
                     tasks.add(t);
-                    System.out.println("\t" + input + "\n");
+                    System.out.println("\tGot it. I've added this task: ");
+                    System.out.println("\t " + t);
+                    System.out.println("\tNow you have " + tasks.size() + " tasks in the list.\n");
                 }
             }
         }

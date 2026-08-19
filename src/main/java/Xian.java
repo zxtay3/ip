@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Xian {
@@ -11,7 +10,7 @@ public class Xian {
                 + "  /  \\  | | / ___ \\| |\\  |\n"
                 + " /_/\\_\\|___/_/   \\_\\_| \\_|\n";
         String botName = "XIAN";
-        List<String> tasks = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
 
         System.out.println(banner);
         System.out.println("Hello, I'm " + botName + "!");
@@ -25,16 +24,28 @@ public class Xian {
 
             if (input.equals("bye")){
                 break;
-            }
-
-            if(input.equals("list")){
+            }else if(input.equals("list")){
+                System.out.println("\tHere are the task in your list:");
                 for (int i = 0; i < tasks.size(); i++){
                     System.out.println("\t" + (i+1) + ". " + tasks.get(i));
                 }
                 System.out.println();
-            }else {
-                tasks.add(input);
-                System.out.println("\t" + "added: " + input + "\n");
+            }else{
+                String[] parts = input.split(" ");
+                String command = parts[0];
+
+                if(command.equals("mark")){
+                    int idx = Integer.parseInt(parts[1]);
+                    Task t = tasks.get(idx - 1);
+                    t.mark();
+
+                    System.out.println("\tNice! I've marked this task as done: ");
+                    System.out.println("\t" + t);
+                }else{
+                    Task t = new Task(input);
+                    tasks.add(t);
+                    System.out.println("\t" + input + "\n");
+                }
             }
         }
 

@@ -58,6 +58,12 @@ public class Xian {
                         String task = task_date[0];
                         String by = task_date[1];
                         t = new Deadline(task, by);
+                    }else if(command.equals("event")){
+                        String[] task_date = remainder.split(" /from | /to ");
+                        String task = task_date[0];
+                        String from = task_date[1];
+                        String to = task_date[2];
+                        t = new Event(task, from, to);
                     }else{
                         continue;
                     }

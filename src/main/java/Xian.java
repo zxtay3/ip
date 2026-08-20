@@ -64,6 +64,18 @@ public class Xian {
 
                         System.out.println("\tOK, I've marked this task as not done yet: ");
                         System.out.println("\t " + t + "\n");
+                    }else if(command.equals("delete")){
+                        int idx = Integer.parseInt(remainder);
+
+                        if(idx < 1 || idx > tasks.size()){
+                            throw new XianException("Hello?! Please enter a valid item to delete  >:(");
+                        }
+
+                        Task t = tasks.remove(idx - 1);
+
+                        System.out.println("\tNoted!! I have deleted the item from the list");
+                        System.out.println("\t " + t + "\n");
+                        System.out.println("\tNow you have " + tasks.size() + " tasks in the list\n");
                     }else{
                         Task t;
 

@@ -2,11 +2,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Storage{
     private final Path path;
+    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
 
     public Storage(String filePath){
         this.path = Paths.get(filePath);
@@ -27,8 +31,12 @@ public class Storage{
 
             switch(parts[0]){
                 case "T" -> task = new Todo(parts[2]);
-                case "D" -> task = new Deadline(parts[2], parts[3]);
-                case "E" -> task = new Event(parts[2], parts[3], parts[4]);
+                case "D" -> task = new Deadline(parts[2], LocalDateTime.parse(parts[3], DATE_TIME_FORMAT));
+                case "E" -> task = new Event(
+                        parts[2],
+                        LocalDateTime.parse(parts[3], DATE_TIME_FORMAT),
+                        LocalDateTime.parse(parts[4], DATE_TIME_FORMAT)
+                );
                 default -> throw new XianException("Unable to load invalid saved task type");
             }
 
@@ -56,9 +64,14 @@ public class Storage{
             if(task instanceof Todo){
                 lines.add("T | " + doneStatus + " | " + task.getDescription());
             }else if (task instanceof Deadline){
-                lines.add("D | " + doneStatus + " | " + task.getDescription() + " | " + ((Deadline) task).getBy_date());
+                lines.add("D | " + doneStatus + " | "
+                        + task.getDescription() + " | "
+                        + ((Deadline) task).getBy_date().format(DATE_TIME_FORMAT));
             }else if (task instanceof Event){
-                lines.add("E | " + doneStatus + " | " + task.getDescription() + " | " + ((Event) task).getFrom() + " | " + ((Event) task).getTo());
+                lines.add("E | " + doneStatus + " | "
+                        + task.getDescription() + " | "
+                        + ((Event) task).getFrom().format(DATE_TIME_FORMAT) + " | "
+                        + ((Event) task).getTo().format(DATE_TIME_FORMAT));
             }else{
                 throw new XianException("Invalid task type cannot be saved");
             }

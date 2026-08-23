@@ -1,15 +1,23 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.List;
 
 public class Xian {
+
+    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
+
     public static void main(String[] args) {
-        String banner = " __  __ ___    _    _   _ \n"
-                + " \\ \\/ /|_ _|  / \\  | \\ | |\n"
-                + "  \\  /  | |  / _ \\ |  \\| |\n"
-                + "  /  \\  | | / ___ \\| |\\  |\n"
-                + " /_/\\_\\|___/_/   \\_\\_| \\_|\n";
+        String banner = """
+                 __  __ ___    _    _   _\s
+                 \\ \\/ /|_ _|  / \\  | \\ | |
+                  \\  /  | |  / _ \\ |  \\| |
+                  /  \\  | | / ___ \\| |\\  |
+                 /_/\\_\\|___/_/   \\_\\_| \\_|
+                """;
         String botName = "XIAN";
         Storage storage = new Storage("data/xian.txt");
         List<Task> tasks;
@@ -104,7 +112,7 @@ public class Xian {
                                 }
 
                                 String task = task_date[0];
-                                String by = task_date[1];
+                                LocalDateTime by = LocalDateTime.parse(task_date[1], DATE_TIME_FORMAT);
                                 t = new Deadline(task, by);
                             }
                             case "event" -> {
@@ -115,8 +123,9 @@ public class Xian {
                                 }
 
                                 String task = task_date[0];
-                                String from = task_date[1];
-                                String to = task_date[2];
+                                LocalDateTime from = LocalDateTime.parse(task_date[1], DATE_TIME_FORMAT);
+                                LocalDateTime to = LocalDateTime.parse(task_date[2], DATE_TIME_FORMAT);
+
                                 t = new Event(task, from, to);
                             }
                             default -> throw new XianException("Please enter a valid action :( ");
@@ -132,6 +141,8 @@ public class Xian {
                 System.out.println(e.getMessage());
             }catch (NumberFormatException e){
                 System.out.println("Task number entered is not valid!! >:(");
+            }catch (DateTimeParseException e){
+                System.out.println("Please enter date and time in correct format!! >:(");
             }catch (IOException e){
                 System.out.println("Unable to save your tasks :(");
             }

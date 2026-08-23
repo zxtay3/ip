@@ -42,6 +42,28 @@ public class Storage{
     }
 
     public void save(List<Task> tasks) throws IOException, XianException{
+        Path parent = path.getParent();
 
+        if (parent != null){
+            Files.createDirectories(parent);
+        }
+
+        List<String> lines = new ArrayList<>();
+
+        for(Task task : tasks){
+            String doneStatus = task.getStatusCode();
+
+            if(task instanceof Todo){
+                lines.add("T | " + doneStatus + " | " + task.getDescription());
+            }else if (task instanceof Deadline){
+                lines.add("D | " + doneStatus + " | " + task.getDescription() + " | " + ((Deadline) task).getBy_date());
+            }else if (task instanceof Event){
+                lines.add("E | " + doneStatus + " | " + task.getDescription() + " | " + ((Event) task).getFrom() + " | " + ((Event) task).getTo());
+            }else{
+                throw new XianException("Invalid task type cannot be saved");
+            }
+        }
+
+        Files.write(path, lines);
     }
 }

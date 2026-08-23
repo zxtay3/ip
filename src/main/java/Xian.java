@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.List;
@@ -10,11 +11,22 @@ public class Xian {
                 + "  /  \\  | | / ___ \\| |\\  |\n"
                 + " /_/\\_\\|___/_/   \\_\\_| \\_|\n";
         String botName = "XIAN";
-        List<Task> tasks = new ArrayList<>();
+        Storage storage = new Storage("data/xian.txt");
+        List<Task> tasks;
 
         System.out.println(banner);
         System.out.println("Hello, I'm " + botName + "!");
         System.out.println("What can I do for you today?\n");
+
+        try{
+            tasks = storage.load();
+        }catch (IOException e){
+            System.out.println("Error loading saved tasks");
+            tasks = new ArrayList<>();
+        }catch (XianException e){
+            System.out.println(e.getMessage());
+            tasks = new ArrayList<>();
+        }
 
         Scanner scanner = new Scanner(System.in);
 
@@ -49,6 +61,7 @@ public class Xian {
 
                         Task t = tasks.get(idx - 1);
                         t.mark();
+                        storage.save(tasks);
 
                         System.out.println("\tNice! I've marked this task as done: ");
                         System.out.println("\t " + t + "\n");
@@ -61,6 +74,7 @@ public class Xian {
 
                         Task t = tasks.get(idx - 1);
                         t.unmark();
+                        storage.save(tasks);
 
                         System.out.println("\tOK, I've marked this task as not done yet: ");
                         System.out.println("\t " + t + "\n");
@@ -72,6 +86,7 @@ public class Xian {
                         }
 
                         Task t = tasks.remove(idx - 1);
+                        storage.save(tasks);
 
                         System.out.println("\tNoted!! I have deleted the item from the list");
                         System.out.println("\t " + t + "\n");
@@ -107,6 +122,7 @@ public class Xian {
                             default -> throw new XianException("Please enter a valid action :( ");
                         }
                         tasks.add(t);
+                        storage.save(tasks);
                         System.out.println("\tGot it. I've added this task: ");
                         System.out.println("\t " + t);
                         System.out.println("\tNow you have " + tasks.size() + " tasks in the list.\n");
@@ -116,6 +132,8 @@ public class Xian {
                 System.out.println(e.getMessage());
             }catch (NumberFormatException e){
                 System.out.println("Task number entered is not valid!! >:(");
+            }catch (IOException e){
+                System.out.println("Unable to save your tasks :(");
             }
 
         }

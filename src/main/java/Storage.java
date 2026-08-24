@@ -16,8 +16,8 @@ public class Storage{
         this.path = Paths.get(filePath);
     }
 
-    public List<Task> load() throws IOException, XianException{
-        List<Task> tasks = new ArrayList<>();
+    public TaskList load() throws IOException, XianException{
+        TaskList tasks = new TaskList();
 
         if (!Files.exists(path)) {
             return tasks;
@@ -49,7 +49,7 @@ public class Storage{
         return tasks;
     }
 
-    public void save(List<Task> tasks) throws IOException, XianException{
+    public void save(TaskList tasks) throws IOException, XianException{
         Path parent = path.getParent();
 
         if (parent != null){

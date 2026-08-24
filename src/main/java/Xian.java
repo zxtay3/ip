@@ -2,54 +2,37 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.List;
 
 public class Xian {
 
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
 
     public static void main(String[] args) {
-        String banner = """
-                 __  __ ___    _    _   _\s
-                 \\ \\/ /|_ _|  / \\  | \\ | |
-                  \\  /  | |  / _ \\ |  \\| |
-                  /  \\  | | / ___ \\| |\\  |
-                 /_/\\_\\|___/_/   \\_\\_| \\_|
-                """;
-        String botName = "XIAN";
-        Storage storage = new Storage("data/xian.txt");
-        List<Task> tasks;
 
-        System.out.println(banner);
-        System.out.println("Hello, I'm " + botName + "!");
-        System.out.println("What can I do for you today?\n");
+        Storage storage = new Storage("data/xian.txt");
+        Ui ui = new Ui();
+        TaskList tasks;
+
+        ui.welcomeMessage();
 
         try{
             tasks = storage.load();
         }catch (IOException e){
             System.out.println("Error loading saved tasks");
-            tasks = new ArrayList<>();
+            tasks = new TaskList();
         }catch (XianException e){
             System.out.println(e.getMessage());
-            tasks = new ArrayList<>();
+            tasks = new TaskList();
         }
 
-        Scanner scanner = new Scanner(System.in);
-
         while(true){
-            String input = scanner.nextLine();
+            String input = ui.readCommand();
             System.out.println();
             try{
                 if (input.equals("bye")){
                     break;
                 }else if(input.equals("list")){
-                    System.out.println("\tHere are the task in your list:");
-                    for (int i = 0; i < tasks.size(); i++){
-                        System.out.println("\t" + (i+1) + ". " + tasks.get(i));
-                    }
-                    System.out.println();
+                    ui.showTaskList(tasks);
                 }else{
                     String[] parts = input.split(" ", 2);
                     String command = parts[0];
@@ -63,7 +46,7 @@ public class Xian {
                     if(command.equals("mark")){
                         int idx = Integer.parseInt(remainder);
 
-                        if(idx < 1 || idx > tasks.size()){
+                        if(idx < 1 || idx > tasks.getSize()){
                             throw new XianException("Hello?! Please enter a valid item to mark  >:(");
                         }
 
@@ -71,12 +54,11 @@ public class Xian {
                         t.mark();
                         storage.save(tasks);
 
-                        System.out.println("\tNice! I've marked this task as done: ");
-                        System.out.println("\t " + t + "\n");
+                        ui.showTaskMark(t);
                     }else if(command.equals("unmark")){
                         int idx = Integer.parseInt(remainder);
 
-                        if(idx < 1 || idx > tasks.size()){
+                        if(idx < 1 || idx > tasks.getSize()){
                             throw new XianException("Hello?! Please enter a valid item to unmark  >:(");
                         }
 
@@ -84,21 +66,18 @@ public class Xian {
                         t.unmark();
                         storage.save(tasks);
 
-                        System.out.println("\tOK, I've marked this task as not done yet: ");
-                        System.out.println("\t " + t + "\n");
+                        ui.showTaskUnmark(t);
                     }else if(command.equals("delete")){
                         int idx = Integer.parseInt(remainder);
 
-                        if(idx < 1 || idx > tasks.size()){
+                        if(idx < 1 || idx > tasks.getSize()){
                             throw new XianException("Hello?! Please enter a valid item to delete  >:(");
                         }
 
-                        Task t = tasks.remove(idx - 1);
+                        Task t = tasks.delete(idx);
                         storage.save(tasks);
 
-                        System.out.println("\tNoted!! I have deleted the item from the list");
-                        System.out.println("\t " + t + "\n");
-                        System.out.println("\tNow you have " + tasks.size() + " tasks in the list\n");
+                        ui.showTaskDelete(t, tasks);
                     }else{
                         Task t;
 
@@ -132,9 +111,7 @@ public class Xian {
                         }
                         tasks.add(t);
                         storage.save(tasks);
-                        System.out.println("\tGot it. I've added this task: ");
-                        System.out.println("\t " + t);
-                        System.out.println("\tNow you have " + tasks.size() + " tasks in the list.\n");
+                        ui.showTaskAdded(t, tasks);
                     }
                 }
             }catch (XianException e){
@@ -149,6 +126,6 @@ public class Xian {
 
         }
 
-        System.out.println("\tBye!! See you again soon!\n");
+        ui.showEnd();
     }
 }

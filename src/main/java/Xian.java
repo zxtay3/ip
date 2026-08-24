@@ -3,13 +3,13 @@ import java.time.format.DateTimeParseException;
 
 public class Xian {
 
-    public static void main(String[] args) {
+    private final Storage storage;
+    private final Ui ui;
+    private TaskList tasks;
 
-        Storage storage = new Storage("data/xian.txt");
-        Ui ui = new Ui();
-        TaskList tasks;
-
-        ui.welcomeMessage();
+    public Xian(String filePath){
+        ui = new Ui();
+        storage = new Storage(filePath);
 
         try{
             tasks = storage.load();
@@ -20,7 +20,10 @@ public class Xian {
             System.out.println(e.getMessage());
             tasks = new TaskList();
         }
+    }
 
+    public void run(){
+        ui.welcomeMessage();
         while(true){
             String input = ui.readCommand();
             System.out.println();
@@ -33,53 +36,11 @@ public class Xian {
                     String command = Parser.getCommandWord(input);
                     String remainder = Parser.getArguments(input);
 
-                    if(command.equals("mark")){
-                        int idx = Parser.parseIndex(remainder);
-
-                        if(idx < 1 || idx > tasks.getSize()){
-                            throw new XianException("Hello?! Please enter a valid item to mark  >:(");
-                        }
-
-                        Task t = tasks.get(idx - 1);
-                        t.mark();
-                        storage.save(tasks);
-
-                        ui.showTaskMark(t);
-                    }else if(command.equals("unmark")){
-                        int idx = Parser.parseIndex(remainder);
-
-                        if(idx < 1 || idx > tasks.getSize()){
-                            throw new XianException("Hello?! Please enter a valid item to unmark  >:(");
-                        }
-
-                        Task t = tasks.get(idx - 1);
-                        t.unmark();
-                        storage.save(tasks);
-
-                        ui.showTaskUnmark(t);
-                    }else if(command.equals("delete")){
-                        int idx = Parser.parseIndex(remainder);
-
-                        if(idx < 1 || idx > tasks.getSize()){
-                            throw new XianException("Hello?! Please enter a valid item to delete  >:(");
-                        }
-
-                        Task t = tasks.delete(idx);
-                        storage.save(tasks);
-
-                        ui.showTaskDelete(t, tasks);
-                    }else{
-                        Task t;
-
-                        switch (command) {
-                            case "todo" -> t = Parser.parseTodo(remainder);
-                            case "deadline" -> t = Parser.parseDeadline(remainder);
-                            case "event" -> t = Parser.parseEvent(remainder);
-                            default -> throw new XianException("Please enter a valid action :( ");
-                        }
-                        tasks.add(t);
-                        storage.save(tasks);
-                        ui.showTaskAdded(t, tasks);
+                    switch (command) {
+                        case "mark" -> handleMark(remainder);
+                        case "unmark" -> handleUnmark(remainder);
+                        case "delete" -> handleDelete(remainder);
+                        default -> handleAddTask(command, remainder);
                     }
                 }
             }catch (XianException e){
@@ -91,9 +52,64 @@ public class Xian {
             }catch (IOException e){
                 System.out.println("Unable to save your tasks :(");
             }
+        }
+        ui.showEnd();
+    }
 
+    private void handleMark(String remainder) throws IOException, XianException{
+        int idx = Parser.parseIndex(remainder);
+
+        if (idx < 1 || idx > tasks.getSize()) {
+            throw new XianException("Hello?! Please enter a valid item to mark  >:(");
         }
 
-        ui.showEnd();
+        Task t = tasks.get(idx - 1);
+        t.mark();
+        storage.save(tasks);
+
+        ui.showTaskMark(t);
+    }
+
+    private void handleUnmark(String remainder) throws IOException, XianException{
+        int idx = Parser.parseIndex(remainder);
+
+        if (idx < 1 || idx > tasks.getSize()) {
+            throw new XianException("Hello?! Please enter a valid item to unmark  >:(");
+        }
+
+        Task t = tasks.get(idx - 1);
+        t.unmark();
+        storage.save(tasks);
+
+        ui.showTaskUnmark(t);
+    }
+
+    private void handleDelete(String remainder) throws IOException, XianException{
+        int idx = Parser.parseIndex(remainder);
+
+        if (idx < 1 || idx > tasks.getSize()) {
+            throw new XianException("Hello?! Please enter a valid item to delete  >:(");
+        }
+
+        Task t = tasks.delete(idx);
+        storage.save(tasks);
+
+        ui.showTaskDelete(t, tasks);
+    }
+
+    private void handleAddTask(String command, String remainder) throws IOException, XianException{
+        Task t = switch (command) {
+            case "todo" -> Parser.parseTodo(remainder);
+            case "deadline" -> Parser.parseDeadline(remainder);
+            case "event" -> Parser.parseEvent(remainder);
+            default -> throw new XianException("Please enter a valid action :( ");
+        };
+        tasks.add(t);
+        storage.save(tasks);
+        ui.showTaskAdded(t, tasks);
+    }
+
+    public static void main(String[] args) {
+        new Xian("data/xian.txt").run();
     }
 }

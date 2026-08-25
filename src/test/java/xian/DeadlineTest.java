@@ -31,7 +31,7 @@ public class DeadlineTest {
     public void getByDate_returnsCorrectDateTime() {
         LocalDateTime by = LocalDateTime.parse("2/12/2019 1800", DATE_TIME_FORMAT);
         Deadline deadline = new Deadline("project work", by);
-        assertEquals(by, deadline.getBy_date());
+        assertEquals(by, deadline.getByDate());
     }
 
     @Test

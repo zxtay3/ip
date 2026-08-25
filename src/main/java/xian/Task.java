@@ -5,7 +5,7 @@ package xian;
  * This is the base class for all specific task types such as
  * {@link Todo}, {@link Deadline}, and {@link Event}.
  */
-public class Task{
+public class Task {
     protected String description;
     protected boolean isDone;
 
@@ -15,7 +15,7 @@ public class Task{
      *
      * @param description the description of the task.
      */
-    public Task(String description){
+    public Task(String description) {
         this.description = description;
         this.isDone = false;
     }
@@ -34,7 +34,7 @@ public class Task{
      *
      * @return {@code "X"} if the task is done, or a blank space {@code " "} otherwise.
      */
-    public String getStatusIcon(){
+    public String getStatusIcon() {
         return (isDone ? "X" : " ");
     }
 
@@ -43,7 +43,9 @@ public class Task{
      *
      * @return {@code "1"} if the task is done, or {@code "0"} otherwise.
      */
-    public String getStatusCode(){ return (isDone ? "1" : "0"); }
+    public String getStatusCode() {
+        return (isDone ? "1" : "0");
+    }
 
     /**
      * Marks this task as done.
@@ -55,7 +57,7 @@ public class Task{
     /**
      * Marks this task as not done.
      */
-    public void unmark(){
+    public void unmark() {
         this.isDone = false;
     }
 
@@ -66,7 +68,7 @@ public class Task{
      * @return the formatted string representation of this task.
      */
     @Override
-    public String toString(){
+    public String toString() {
         return "[" + getStatusIcon() + "] " + description;
     }
 }

@@ -55,6 +55,7 @@ public class Xian {
                     String remainder = Parser.getArguments(input);
 
                     switch (command) {
+                        case "find" -> handleFind(remainder);
                         case "mark" -> handleMark(remainder);
                         case "unmark" -> handleUnmark(remainder);
                         case "delete" -> handleDelete(remainder);
@@ -159,6 +160,16 @@ public class Xian {
         tasks.add(task);
         storage.save(tasks);
         ui.showTaskAdded(task, tasks);
+    }
+
+    /**
+     * Handles the "find" command by displaying tasks matching the keyword.
+     *
+     * @param remainder The keyword to search for in task descriptions.
+     */
+    private void handleFind(String remainder) {
+        TaskList matchingTasks = tasks.find(remainder);
+        ui.showMatchingTasks(matchingTasks);
     }
 
     /**

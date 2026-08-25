@@ -3,6 +3,7 @@ package xian;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Represents a list of tasks.
@@ -55,6 +56,28 @@ public class TaskList implements Iterable<Task> {
      */
     public void add(Task task) {
         tasks.add(task);
+    }
+
+    /**
+     * Returns the tasks whose descriptions contain the given keyword,
+     * ignoring differences in letter case.
+     *
+     * @param keyword The keyword to search for.
+     * @return A task list containing the matching tasks.
+     */
+    public TaskList find(String keyword) {
+        TaskList matchingTasks = new TaskList();
+        String lowerCaseKeyword = keyword.toLowerCase(Locale.ROOT);
+
+        for (Task task : tasks) {
+            String lowerCaseDescription = task.getDescription().toLowerCase(Locale.ROOT);
+
+            if (lowerCaseDescription.contains(lowerCaseKeyword)) {
+                matchingTasks.add(task);
+            }
+        }
+
+        return matchingTasks;
     }
 
     /**

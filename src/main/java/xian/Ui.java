@@ -96,6 +96,24 @@ public class Ui {
     }
 
     /**
+     * Displays the tasks whose descriptions match the search keyword.
+     *
+     * @param matchingTasks The tasks that match the search keyword.
+     */
+    public void showMatchingTasks(TaskList matchingTasks) {
+        if (matchingTasks.getSize() == 0) {
+            System.out.println("\tThere are no tasks that fit the description :(");
+            return;
+        }
+
+        System.out.println("\tHere are the matching tasks in your list:");
+        for (int i = 0; i < matchingTasks.getSize(); i++) {
+            System.out.println("\t" + (i + 1) + ". " + matchingTasks.get(i));
+        }
+        System.out.println();
+    }
+
+    /**
      * Displays the farewell message shown when the program exits.
      */
     public void showEnd() {

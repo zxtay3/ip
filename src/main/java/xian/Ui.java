@@ -1,3 +1,5 @@
+package xian;
+
 import java.util.Scanner;
 
 public class Ui{

@@ -10,14 +10,30 @@ import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Deals with loading tasks from the save file and saving tasks to the save file.
+ */
 public class Storage{
     private final Path path;
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
 
+    /**
+     * Creates a Storage instance that reads from and writes to the given file path.
+     *
+     * @param filePath the path of the file used for saving/loading tasks.
+     */
     public Storage(String filePath){
         this.path = Paths.get(filePath);
     }
 
+    /**
+     * Loads tasks from the save file into a new TaskList.
+     * If the save file does not exist, an empty TaskList is returned.
+     *
+     * @return the loaded TaskList.
+     * @throws IOException if the save file cannot be read.
+     * @throws XianException if a line in the save file has an invalid task type.
+     */
     public TaskList load() throws IOException, XianException{
         TaskList tasks = new TaskList();
 
@@ -51,6 +67,14 @@ public class Storage{
         return tasks;
     }
 
+    /**
+     * Saves the given TaskList to the save file, creating any missing
+     * parent directories as needed.
+     *
+     * @param tasks the TaskList to save.
+     * @throws IOException if the save file cannot be written.
+     * @throws XianException if the TaskList contains a task of an unrecognized type.
+     */
     public void save(TaskList tasks) throws IOException, XianException{
         Path parent = path.getParent();
 
@@ -63,19 +87,16 @@ public class Storage{
         for(Task task : tasks){
             String doneStatus = task.getStatusCode();
 
-            if(task instanceof Todo){
-                lines.add("T | " + doneStatus + " | " + task.getDescription());
-            }else if (task instanceof Deadline){
-                lines.add("D | " + doneStatus + " | "
+            switch (task) {
+                case Todo todo -> lines.add("T | " + doneStatus + " | " + task.getDescription());
+                case Deadline deadline -> lines.add("D | " + doneStatus + " | "
                         + task.getDescription() + " | "
-                        + ((Deadline) task).getBy_date().format(DATE_TIME_FORMAT));
-            }else if (task instanceof Event){
-                lines.add("E | " + doneStatus + " | "
+                        + deadline.getBy_date().format(DATE_TIME_FORMAT));
+                case Event event -> lines.add("E | " + doneStatus + " | "
                         + task.getDescription() + " | "
-                        + ((Event) task).getFrom().format(DATE_TIME_FORMAT) + " | "
-                        + ((Event) task).getTo().format(DATE_TIME_FORMAT));
-            }else{
-                throw new XianException("Invalid task type cannot be saved");
+                        + event.getFrom().format(DATE_TIME_FORMAT) + " | "
+                        + event.getTo().format(DATE_TIME_FORMAT));
+                default -> throw new XianException("Invalid task type cannot be saved");
             }
         }
 

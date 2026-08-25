@@ -6,19 +6,19 @@ import java.time.format.DateTimeFormatter;
 /**
  * Represents a task that needs to be completed before a specific date and time.
  */
-public class Deadline extends Task{
-    protected LocalDateTime by_date;
+public class Deadline extends Task {
+    private LocalDateTime byDate;
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
 
     /**
      * Creates a new Deadline task with the given description and due date/time.
      *
      * @param description the description of the task.
-     * @param by_date the date and time by which the task should be completed.
+     * @param byDate The date and time by which the task should be completed.
      */
-    public Deadline(String description,LocalDateTime by_date){
+    public Deadline(String description, LocalDateTime byDate) {
         super(description);
-        this.by_date = by_date;
+        this.byDate = byDate;
     }
 
     /**
@@ -26,8 +26,8 @@ public class Deadline extends Task{
      *
      * @return the deadline date and time.
      */
-    public LocalDateTime getBy_date(){
-        return this.by_date;
+    public LocalDateTime getByDate() {
+        return this.byDate;
     }
 
     /**
@@ -37,7 +37,7 @@ public class Deadline extends Task{
      * @return the formatted string representation of this task.
      */
     @Override
-    public String toString(){
-        return "[D]" + super.toString() + " (by: " + by_date.format(DATE_TIME_FORMAT) + ")";
+    public String toString() {
+        return "[D]" + super.toString() + " (by: " + byDate.format(DATE_TIME_FORMAT) + ")";
     }
 }

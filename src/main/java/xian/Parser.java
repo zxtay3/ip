@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
  * parses strings and returns objects, or throws an exception if the input
  * is malformed.
  */
-public class Parser{
+public class Parser {
 
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
 
@@ -19,7 +19,7 @@ public class Parser{
      * @param input the raw user input.
      * @return the command word.
      */
-    public static String getCommandWord(String input){
+    public static String getCommandWord(String input) {
         return input.split(" ", 2)[0];
     }
 
@@ -31,10 +31,10 @@ public class Parser{
      * @return the arguments portion of the input.
      * @throws XianException if no arguments are provided after the command word.
      */
-    public static String getArguments(String input) throws XianException{
+    public static String getArguments(String input) throws XianException {
         String[] parts = input.split(" ", 2);
 
-        if (parts.length < 2 || parts[1].isBlank()){
+        if (parts.length < 2 || parts[1].isBlank()) {
             throw new XianException("Please remember to state task!! >:(");
         }
 
@@ -48,7 +48,7 @@ public class Parser{
      * @return the parsed index.
      * @throws NumberFormatException if the string cannot be parsed as an integer.
      */
-    public static int parseIndex(String remainder) throws NumberFormatException{
+    public static int parseIndex(String remainder) throws NumberFormatException {
         return Integer.parseInt(remainder);
     }
 
@@ -58,7 +58,7 @@ public class Parser{
      * @param remainder the description of the todo task.
      * @return the created Todo task.
      */
-    public static Task parseTodo(String remainder){
+    public static Task parseTodo(String remainder) {
         return new Todo(remainder);
     }
 
@@ -70,10 +70,10 @@ public class Parser{
      * @return the created Deadline task.
      * @throws XianException if the arguments are not in the expected format.
      */
-    public static Task parseDeadline(String remainder) throws XianException{
+    public static Task parseDeadline(String remainder) throws XianException {
         String[] taskDate = remainder.split(" /by ");
 
-        if (taskDate.length != 2 || taskDate[0].isBlank() || taskDate[1].isBlank()){
+        if (taskDate.length != 2 || taskDate[0].isBlank() || taskDate[1].isBlank()) {
             throw new XianException("Please ensure the format of the task is correct!! >:(");
         }
 
@@ -89,10 +89,11 @@ public class Parser{
      * @return the created Event task.
      * @throws XianException if the arguments are not in the expected format.
      */
-    public static Task parseEvent(String remainder) throws XianException{
+    public static Task parseEvent(String remainder) throws XianException {
         String[] taskDate = remainder.split(" /from | /to ");
 
-        if (taskDate.length != 3 || taskDate[0].isBlank() || taskDate[1].isBlank() || taskDate[2].isBlank()){
+        if (taskDate.length != 3 || taskDate[0].isBlank()
+                || taskDate[1].isBlank() || taskDate[2].isBlank()) {
             throw new XianException("Please ensure the format of the task is correct!! >:(");
         }
 

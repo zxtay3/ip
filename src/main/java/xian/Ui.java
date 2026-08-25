@@ -6,10 +6,10 @@ import java.util.Scanner;
  * Deals with interactions with the user, including displaying messages
  * and reading commands from standard input.
  */
-public class Ui{
+public class Ui {
 
     private final Scanner scanner = new Scanner(System.in);
-    private static final String banner = """
+    private static final String BANNER = """
              __  __ ___    _    _   _\s
              \\ \\/ /|_ _|  / \\  | \\ | |
               \\  /  | |  / _ \\ |  \\| |
@@ -23,15 +23,15 @@ public class Ui{
      *
      * @return the raw command entered by the user.
      */
-    public String readCommand(){
+    public String readCommand() {
         return scanner.nextLine();
     }
 
     /**
      * Displays the welcome banner and greeting message.
      */
-    public void welcomeMessage(){
-        System.out.println(banner);
+    public void welcomeMessage() {
+        System.out.println(BANNER);
         System.out.println("Hello, I'm " + BOT_NAME + "!");
         System.out.println("What can I do for you today?\n");
     }
@@ -39,33 +39,33 @@ public class Ui{
     /**
      * Displays a message confirming that a task has been marked as done.
      *
-     * @param t the task that was marked.
+     * @param task The task that was marked.
      */
-    public void showTaskMark(Task t){
+    public void showTaskMark(Task task) {
         System.out.println("\tNice! I've marked this task as done: ");
-        System.out.println("\t " + t + "\n");
+        System.out.println("\t " + task + "\n");
     }
 
     /**
      * Displays a message confirming that a task has been marked as not done.
      *
-     * @param t the task that was unmarked.
+     * @param task The task that was unmarked.
      */
-    public void showTaskUnmark(Task t){
+    public void showTaskUnmark(Task task) {
         System.out.println("\tOK, I've marked this task as not done yet: ");
-        System.out.println("\t " + t + "\n");
+        System.out.println("\t " + task + "\n");
     }
 
     /**
      * Displays a message confirming that a task has been deleted,
      * along with the updated number of tasks remaining.
      *
-     * @param t the task that was deleted.
-     * @param tasks the task list after deletion.
+     * @param task The task that was deleted.
+     * @param tasks The task list after deletion.
      */
-    public void showTaskDelete(Task t, TaskList tasks){
+    public void showTaskDelete(Task task, TaskList tasks) {
         System.out.println("\tNoted!! I have deleted the item from the list");
-        System.out.println("\t " + t + "\n");
+        System.out.println("\t " + task + "\n");
         System.out.println("\tNow you have " + tasks.getSize() + " tasks in the list\n");
     }
 
@@ -73,24 +73,24 @@ public class Ui{
      * Displays a message confirming that a task has been added,
      * along with the updated number of tasks in the list.
      *
-     * @param t the task that was added.
-     * @param tasks the task list after addition.
+     * @param task The task that was added.
+     * @param tasks The task list after addition.
      */
-    public void showTaskAdded(Task t, TaskList tasks){
+    public void showTaskAdded(Task task, TaskList tasks) {
         System.out.println("\tGot it. I've added this task: ");
-        System.out.println("\t " + t);
+        System.out.println("\t " + task);
         System.out.println("\tNow you have " + tasks.getSize() + " tasks in the list.\n");
     }
 
     /**
      * Displays every task currently in the given task list.
      *
-     * @param tasks the task list to display.
+     * @param tasks The task list to display.
      */
-    public void showTaskList(TaskList tasks){
+    public void showTaskList(TaskList tasks) {
         System.out.println("\tHere are the task in your list:");
-        for (int i = 0; i < tasks.getSize(); i++){
-            System.out.println("\t" + (i+1) + ". " + tasks.get(i));
+        for (int i = 0; i < tasks.getSize(); i++) {
+            System.out.println("\t" + (i + 1) + ". " + tasks.get(i));
         }
         System.out.println();
     }
@@ -98,7 +98,7 @@ public class Ui{
     /**
      * Displays the farewell message shown when the program exits.
      */
-    public void showEnd(){
+    public void showEnd() {
         System.out.println("\tBye!! See you again soon!\n");
     }
 }

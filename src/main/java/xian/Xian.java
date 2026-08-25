@@ -3,12 +3,24 @@ package xian;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Entry point for the Xian task management application.
+ * Xian allows users to add, list, mark, unmark, and delete tasks
+ * via text-based commands, with automatic saving to and loading from disk.
+ */
 public class Xian {
 
     private final Storage storage;
     private final Ui ui;
     private TaskList tasks;
 
+    /**
+     * Creates a Xian instance, initializing the UI and loading
+     * previously saved tasks from the given file path.
+     * If loading fails, starts with an empty task list instead.
+     *
+     * @param filePath the path to the file used for saving/loading tasks.
+     */
     public Xian(String filePath){
         ui = new Ui();
         storage = new Storage(filePath);
@@ -24,6 +36,10 @@ public class Xian {
         }
     }
 
+    /**
+     * Runs the main command loop, reading and executing user commands
+     * until the "bye" command is entered.
+     */
     public void run(){
         ui.welcomeMessage();
         while(true){
@@ -58,6 +74,14 @@ public class Xian {
         ui.showEnd();
     }
 
+    /**
+     * Handles the "mark" command by marking the specified task as done
+     * and saving the updated task list.
+     *
+     * @param remainder the arguments containing the task index to mark.
+     * @throws IOException if the updated task list cannot be saved.
+     * @throws XianException if the given index is invalid.
+     */
     private void handleMark(String remainder) throws IOException, XianException{
         int idx = Parser.parseIndex(remainder);
 
@@ -72,6 +96,14 @@ public class Xian {
         ui.showTaskMark(t);
     }
 
+    /**
+     * Handles the "unmark" command by marking the specified task as not done
+     * and saving the updated task list.
+     *
+     * @param remainder the arguments containing the task index to unmark.
+     * @throws IOException if the updated task list cannot be saved.
+     * @throws XianException if the given index is invalid.
+     */
     private void handleUnmark(String remainder) throws IOException, XianException{
         int idx = Parser.parseIndex(remainder);
 
@@ -86,6 +118,14 @@ public class Xian {
         ui.showTaskUnmark(t);
     }
 
+    /**
+     * Handles the "delete" command by removing the specified task
+     * and saving the updated task list.
+     *
+     * @param remainder the arguments containing the task index to delete.
+     * @throws IOException if the updated task list cannot be saved.
+     * @throws XianException if the given index is invalid.
+     */
     private void handleDelete(String remainder) throws IOException, XianException{
         int idx = Parser.parseIndex(remainder);
 
@@ -99,6 +139,16 @@ public class Xian {
         ui.showTaskDelete(t, tasks);
     }
 
+    /**
+     * Handles the "todo", "deadline", and "event" commands by creating
+     * the corresponding task, adding it to the task list, and saving
+     * the updated task list.
+     *
+     * @param command the type of task to add ("todo", "deadline", or "event").
+     * @param remainder the arguments describing the task to create.
+     * @throws IOException if the updated task list cannot be saved.
+     * @throws XianException if the arguments are not in the expected format.
+     */
     private void handleAddTask(String command, String remainder) throws IOException, XianException{
         Task t = switch (command) {
             case "todo" -> Parser.parseTodo(remainder);
@@ -111,6 +161,11 @@ public class Xian {
         ui.showTaskAdded(t, tasks);
     }
 
+    /**
+     * Starts the Xian application.
+     *
+     * @param args command-line arguments (not used).
+     */
     public static void main(String[] args) {
         new Xian("data/xian.txt").run();
     }

@@ -1,10 +1,7 @@
 package xian;
 
-import java.util.Scanner;
-
 /**
- * Deals with interactions with the user, including displaying messages
- * and reading commands from standard input.
+ * Deals with formatting responses and displaying messages to the user.
  */
 public class Ui {
 
@@ -16,107 +13,124 @@ public class Ui {
              /_/\\_\\|___/_/   \\_\\_| \\_|
             """;
     private static final String BOT_NAME = "XIAN";
-    private final Scanner scanner = new Scanner(System.in);
-
     /**
-     * Reads a single line of command input from the user.
+     * Returns a formatted welcome banner and greeting message.
      *
-     * @return the raw command entered by the user.
+     * @return The formatted welcome response.
      */
-    public String readCommand() {
-        return scanner.nextLine();
+    public String formatWelcomeMessage() {
+        return BANNER
+                + "Hello, I'm "
+                + BOT_NAME
+                + "!\n"
+                + "What can I do for you today?\n";
     }
 
     /**
-     * Displays the welcome banner and greeting message.
-     */
-    public void welcomeMessage() {
-        System.out.println(BANNER);
-        System.out.println("Hello, I'm " + BOT_NAME + "!");
-        System.out.println("What can I do for you today?\n");
-    }
-
-    /**
-     * Displays a message confirming that a task has been marked as done.
+     * Returns a formatted message confirming that a task has been marked as done.
      *
      * @param task The task that was marked.
+     * @return The formatted task-marking response.
      */
-    public void showTaskMark(Task task) {
-        System.out.println("\tNice! I've marked this task as done: ");
-        System.out.println("\t " + task + "\n");
+    public String formatTaskMark(Task task) {
+        return "\tOK, I've marked this task as done: \n"
+                + "\t "
+                + task
+                + "\n";
     }
 
     /**
-     * Displays a message confirming that a task has been marked as not done.
+     * Returns a formatted message confirming that a task has been marked as not done.
      *
      * @param task The task that was unmarked.
+     * @return The formatted task-unmarking response.
      */
-    public void showTaskUnmark(Task task) {
-        System.out.println("\tOK, I've marked this task as not done yet: ");
-        System.out.println("\t " + task + "\n");
+    public String formatTaskUnmark(Task task) {
+        return "\tOK, I've marked this task as not done yet: \n"
+                + "\t "
+                + task
+                + "\n";
     }
 
     /**
-     * Displays a message confirming that a task has been deleted,
+     * Returns a formatted message confirming that a task has been deleted,
      * along with the updated number of tasks remaining.
      *
      * @param task The task that was deleted.
      * @param tasks The task list after deletion.
+     * @return The formatted task-deletion response.
      */
-    public void showTaskDelete(Task task, TaskList tasks) {
-        System.out.println("\tNoted!! I have deleted the item from the list");
-        System.out.println("\t " + task + "\n");
-        System.out.println("\tNow you have " + tasks.getSize() + " tasks in the list\n");
+    public String formatTaskDelete(Task task, TaskList tasks) {
+        return "\tNoted!! I have deleted the item from the list\n"
+                + "\t "
+                + task
+                + "\n"
+                + "\tNow you have "
+                + tasks.getSize()
+                + " tasks in the list\n";
     }
 
     /**
-     * Displays a message confirming that a task has been added,
+     * Returns a formatted message confirming that a task has been added,
      * along with the updated number of tasks in the list.
      *
      * @param task The task that was added.
      * @param tasks The task list after addition.
+     * @return The formatted task-addition response.
      */
-    public void showTaskAdded(Task task, TaskList tasks) {
-        System.out.println("\tGot it. I've added this task: ");
-        System.out.println("\t " + task);
-        System.out.println("\tNow you have " + tasks.getSize() + " tasks in the list.\n");
+    public String formatTaskAdded(Task task, TaskList tasks) {
+        return "\tGot it. I've added this task: \n"
+                + "\t "
+                + task
+                + "\n"
+                + "\tNow you have "
+                + tasks.getSize()
+                + " tasks in the list.\n";
     }
 
     /**
-     * Displays every task currently in the given task list.
+     * Returns a formatted list of every task currently in the given task list.
      *
-     * @param tasks The task list to display.
+     * @param tasks The task list to format.
+     * @return The formatted task-list response.
      */
-    public void showTaskList(TaskList tasks) {
-        System.out.println("\tHere are the task in your list:");
+    public String formatTaskList(TaskList tasks) {
+        StringBuilder response = new StringBuilder();
+        response.append("\tHere are the task in your list:\n");
+
         for (int i = 0; i < tasks.getSize(); i++) {
-            System.out.println("\t" + (i + 1) + ". " + tasks.get(i));
+            response.append("\t")
+                    .append(i + 1)
+                    .append(". ")
+                    .append(tasks.get(i))
+                    .append("\n");
         }
-        System.out.println();
+
+        return response.toString();
     }
 
     /**
-     * Displays the tasks whose descriptions match the search keyword.
+     * Returns a formatted list of the tasks whose descriptions match the search keyword.
      *
-     * @param matchingTasks The tasks that match the search keyword.
+     * @param matchingTasks The tasks to include in the formatted response.
+     * @return The formatted matching-tasks response.
      */
-    public void showMatchingTasks(TaskList matchingTasks) {
+    public String formatMatchingTasks(TaskList matchingTasks) {
+        StringBuilder response = new StringBuilder();
         if (matchingTasks.getSize() == 0) {
-            System.out.println("\tThere are no tasks that fit the description :(");
-            return;
+            response.append("\tThere are no tasks that fit the description :(");
+            return response.toString();
         }
 
-        System.out.println("\tHere are the matching tasks in your list:");
+        response.append("\tHere are the matching tasks in your list:\n");
         for (int i = 0; i < matchingTasks.getSize(); i++) {
-            System.out.println("\t" + (i + 1) + ". " + matchingTasks.get(i));
+            response.append("\t")
+                    .append(i + 1)
+                    .append(". ")
+                    .append(matchingTasks.get(i))
+                    .append("\n");
         }
-        System.out.println();
+        return response.toString();
     }
 
-    /**
-     * Displays the farewell message shown when the program exits.
-     */
-    public void showEnd() {
-        System.out.println("\tBye!! See you again soon!\n");
-    }
 }

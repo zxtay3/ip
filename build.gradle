@@ -49,7 +49,7 @@ test {
 }
 
 application {
-    mainClass.set("xian.Xian")
+    mainClass.set("xian.Launcher")
 }
 
 shadowJar {

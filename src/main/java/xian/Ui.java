@@ -8,7 +8,6 @@ import java.util.Scanner;
  */
 public class Ui {
 
-    private final Scanner scanner = new Scanner(System.in);
     private static final String BANNER = """
              __  __ ___    _    _   _\s
              \\ \\/ /|_ _|  / \\  | \\ | |
@@ -17,6 +16,7 @@ public class Ui {
              /_/\\_\\|___/_/   \\_\\_| \\_|
             """;
     private static final String BOT_NAME = "XIAN";
+    private final Scanner scanner = new Scanner(System.in);
 
     /**
      * Reads a single line of command input from the user.

@@ -41,27 +41,16 @@ public class Xian {
      * until the "bye" command is entered.
      */
     public void run() {
-        ui.welcomeMessage();
         while (true) {
             String input = ui.readCommand();
-            System.out.println();
-            try {
-                if (input.equals("bye")) {
-                    break;
-                } else if (input.equals("list")) {
-                    ui.showTaskList(tasks);
-                } else {
-                    String command = Parser.getCommandWord(input);
-                    String remainder = Parser.getArguments(input);
 
-                    switch (command) {
-                        case "find" -> handleFind(remainder);
-                        case "mark" -> handleMark(remainder);
-                        case "unmark" -> handleUnmark(remainder);
-                        case "delete" -> handleDelete(remainder);
-                        default -> handleAddTask(command, remainder);
-                    }
-                }
+            if (input.equals("bye")) {
+                break;
+            }
+
+            try {
+                String response = executeCommand(input);
+                System.out.println(response);
             } catch (XianException e) {
                 System.out.println(e.getMessage());
             } catch (NumberFormatException e) {
@@ -72,7 +61,6 @@ public class Xian {
                 System.out.println("Unable to save your tasks :(");
             }
         }
-        ui.showEnd();
     }
 
     /**
@@ -83,7 +71,7 @@ public class Xian {
      * @throws IOException if the updated task list cannot be saved.
      * @throws XianException if the given index is invalid.
      */
-    private void handleMark(String remainder) throws IOException, XianException {
+    private String handleMark(String remainder) throws IOException, XianException {
         int index = Parser.parseIndex(remainder);
 
         if (index < 1 || index > tasks.getSize()) {
@@ -94,7 +82,7 @@ public class Xian {
         task.mark();
         storage.save(tasks);
 
-        ui.showTaskMark(task);
+        return ui.formatTaskMark(task);
     }
 
     /**
@@ -105,7 +93,7 @@ public class Xian {
      * @throws IOException if the updated task list cannot be saved.
      * @throws XianException if the given index is invalid.
      */
-    private void handleUnmark(String remainder) throws IOException, XianException {
+    private String handleUnmark(String remainder) throws IOException, XianException {
         int index = Parser.parseIndex(remainder);
 
         if (index < 1 || index > tasks.getSize()) {
@@ -116,7 +104,7 @@ public class Xian {
         task.unmark();
         storage.save(tasks);
 
-        ui.showTaskUnmark(task);
+        return ui.formatTaskUnmark(task);
     }
 
     /**
@@ -127,7 +115,7 @@ public class Xian {
      * @throws IOException if the updated task list cannot be saved.
      * @throws XianException if the given index is invalid.
      */
-    private void handleDelete(String remainder) throws IOException, XianException {
+    private String handleDelete(String remainder) throws IOException, XianException {
         int index = Parser.parseIndex(remainder);
 
         if (index < 1 || index > tasks.getSize()) {
@@ -137,7 +125,7 @@ public class Xian {
         Task task = tasks.delete(index);
         storage.save(tasks);
 
-        ui.showTaskDelete(task, tasks);
+        return ui.formatTaskDelete(task, tasks);
     }
 
     /**
@@ -150,7 +138,7 @@ public class Xian {
      * @throws IOException if the updated task list cannot be saved.
      * @throws XianException if the arguments are not in the expected format.
      */
-    private void handleAddTask(String command, String remainder) throws IOException, XianException {
+    private String handleAddTask(String command, String remainder) throws IOException, XianException {
         Task task = switch (command) {
             case "todo" -> Parser.parseTodo(remainder);
             case "deadline" -> Parser.parseDeadline(remainder);
@@ -159,17 +147,43 @@ public class Xian {
         };
         tasks.add(task);
         storage.save(tasks);
-        ui.showTaskAdded(task, tasks);
+        return ui.formatTaskAdded(task, tasks);
     }
 
     /**
-     * Handles the "find" command by displaying tasks matching the keyword.
+     * Handles the "find" command by returning a formatted response containing
+     * tasks matching the keyword.
      *
      * @param remainder The keyword to search for in task descriptions.
      */
-    private void handleFind(String remainder) {
+    private String handleFind(String remainder) {
         TaskList matchingTasks = tasks.find(remainder);
-        ui.showMatchingTasks(matchingTasks);
+        return ui.formatMatchingTasks(matchingTasks);
+    }
+
+    /**
+     * Executes a user command and returns the formatted response.
+     *
+     * @param input The user command to execute.
+     * @return The formatted response for the command.
+     * @throws XianException If the command or its arguments are invalid.
+     * @throws IOException If a task update cannot be saved.
+     */
+    public String executeCommand(String input) throws XianException, IOException {
+        if (input.equals("list")) {
+            return ui.formatTaskList(tasks);
+        } else {
+            String command = Parser.getCommandWord(input);
+            String remainder = Parser.getArguments(input);
+
+            return switch (command) {
+                case "find" -> handleFind(remainder);
+                case "mark" -> handleMark(remainder);
+                case "unmark" -> handleUnmark(remainder);
+                case "delete" -> handleDelete(remainder);
+                default -> handleAddTask(command, remainder);
+            };
+        }
     }
 
     /**
@@ -177,7 +191,7 @@ public class Xian {
      *
      * @param args command-line arguments (not used).
      */
-    public static void main(String[] args) {
+    public static void main (String[]args){
         new Xian("data/xian.txt").run();
     }
 }

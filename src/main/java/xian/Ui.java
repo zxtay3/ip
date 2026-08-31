@@ -1,10 +1,7 @@
 package xian;
 
-import java.util.Scanner;
-
 /**
- * Deals with interactions with the user, including displaying messages
- * and reading commands from standard input.
+ * Deals with formatting responses and displaying messages to the user.
  */
 public class Ui {
 
@@ -16,44 +13,43 @@ public class Ui {
              /_/\\_\\|___/_/   \\_\\_| \\_|
             """;
     private static final String BOT_NAME = "XIAN";
-    private final Scanner scanner = new Scanner(System.in);
-
     /**
-     * Reads a single line of command input from the user.
+     * Returns a formatted welcome banner and greeting message.
      *
-     * @return the raw command entered by the user.
+     * @return The formatted welcome response.
      */
-    public String readCommand() {
-        return scanner.nextLine();
-    }
-
-    /**
-     * Displays the welcome banner and greeting message.
-     */
-    public void welcomeMessage() {
-        System.out.println(BANNER);
-        System.out.println("Hello, I'm " + BOT_NAME + "!");
-        System.out.println("What can I do for you today?\n");
+    public String formatWelcomeMessage() {
+        return BANNER
+                + "Hello, I'm "
+                + BOT_NAME
+                + "!\n"
+                + "What can I do for you today?\n";
     }
 
     /**
      * Returns a formatted message confirming that a task has been marked as done.
      *
      * @param task The task that was marked.
+     * @return The formatted task-marking response.
      */
     public String formatTaskMark(Task task) {
-        return "\tOK, I've marked this task as done: \n" +
-                "\t " + task + "\n";
+        return "\tOK, I've marked this task as done: \n"
+                + "\t "
+                + task
+                + "\n";
     }
 
     /**
      * Returns a formatted message confirming that a task has been marked as not done.
      *
      * @param task The task that was unmarked.
+     * @return The formatted task-unmarking response.
      */
     public String formatTaskUnmark(Task task) {
-        return "\tOK, I've marked this task as not done yet: \n" +
-                "\t " + task + "\n";
+        return "\tOK, I've marked this task as not done yet: \n"
+                + "\t "
+                + task
+                + "\n";
     }
 
     /**
@@ -62,10 +58,16 @@ public class Ui {
      *
      * @param task The task that was deleted.
      * @param tasks The task list after deletion.
+     * @return The formatted task-deletion response.
      */
     public String formatTaskDelete(Task task, TaskList tasks) {
-        return "\tNoted!! I have deleted the item from the list\n" +
-                "\t " + task + "\n" + "\tNow you have " + tasks.getSize() + " tasks in the list\n";
+        return "\tNoted!! I have deleted the item from the list\n"
+                + "\t "
+                + task
+                + "\n"
+                + "\tNow you have "
+                + tasks.getSize()
+                + " tasks in the list\n";
     }
 
     /**
@@ -74,17 +76,23 @@ public class Ui {
      *
      * @param task The task that was added.
      * @param tasks The task list after addition.
+     * @return The formatted task-addition response.
      */
     public String formatTaskAdded(Task task, TaskList tasks) {
-        return "\tGot it. I've added this task: \n" +
-                "\t " + task + "\n" +
-                "\tNow you have " + tasks.getSize() + " tasks in the list.\n";
+        return "\tGot it. I've added this task: \n"
+                + "\t "
+                + task
+                + "\n"
+                + "\tNow you have "
+                + tasks.getSize()
+                + " tasks in the list.\n";
     }
 
     /**
      * Returns a formatted list of every task currently in the given task list.
      *
      * @param tasks The task list to format.
+     * @return The formatted task-list response.
      */
     public String formatTaskList(TaskList tasks) {
         StringBuilder response = new StringBuilder();
@@ -105,6 +113,7 @@ public class Ui {
      * Returns a formatted list of the tasks whose descriptions match the search keyword.
      *
      * @param matchingTasks The tasks to include in the formatted response.
+     * @return The formatted matching-tasks response.
      */
     public String formatMatchingTasks(TaskList matchingTasks) {
         StringBuilder response = new StringBuilder();
@@ -124,10 +133,4 @@ public class Ui {
         return response.toString();
     }
 
-    /**
-     * Displays the farewell message shown when the program exits.
-     */
-    public void showEnd() {
-        System.out.println("\tBye!! See you again soon!\n");
-    }
 }

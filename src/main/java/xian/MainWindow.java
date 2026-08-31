@@ -3,94 +3,88 @@ package xian;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
 
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 /**
  * Represents the main JavaFX window used to interact with Xian.
  */
-public class MainWindow {
+public class MainWindow extends AnchorPane {
 
-    private static final int WINDOW_WIDTH = 600;
-    private static final int WINDOW_HEIGHT = 400;
+    @FXML
+    private ScrollPane scrollPane;
 
-    private final Xian xian;
-    private final TextArea outputArea;
-    private final TextField commandInput;
-    private final Stage stage;
+    @FXML
+    private VBox dialogContainer;
+
+    @FXML
+    private TextField userInput;
+
+    private Xian xian;
+
+    private final Image userImage =
+            new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
+
+    private final Image xianImage =
+            new Image(this.getClass().getResourceAsStream("/images/DaXian.png"));
 
     /**
-     * Creates the main Xian window and connects its input controls to the backend.
+     * Initializes the dialog container's scrolling behavior.
+     */
+    @FXML
+    private void initialize() {
+        scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+    }
+
+    /**
+     * Provides the Xian backend used by this controller.
      *
-     * @param stage The JavaFX stage on which the window is displayed.
+     * @param xian The Xian backend instance.
      */
-    public MainWindow(Stage stage) {
-        this.stage = stage;
-        this.xian = new Xian("data/xian.txt");
-        this.outputArea = new TextArea();
-        this.commandInput = new TextField();
+    public void setXian(Xian xian) {
+        this.xian = xian;
 
-        configureOutputArea();
-        configureCommandInput();
-        configureStage();
+        dialogContainer.getChildren().add(
+                DialogBox.getXianDialog(
+                        xian.getWelcomeMessage(),
+                        xianImage,
+                        ""));
     }
 
     /**
-     * Displays the configured main window.
+     * Handles a command submitted through the input field or Send button.
      */
-    public void show() {
-        stage.show();
-    }
-
-    private void configureOutputArea() {
-        outputArea.setEditable(false);
-        outputArea.setWrapText(true);
-    }
-
-    private void configureCommandInput() {
-        commandInput.setPromptText("Enter a command");
-        commandInput.setOnAction(event -> handleCommand());
-    }
-
-    private void configureStage() {
-        Button sendButton = new Button("Send");
-        sendButton.setOnAction(event -> handleCommand());
-
-        HBox commandBox = new HBox(10, commandInput, sendButton);
-        commandBox.setPadding(new Insets(10));
-        HBox.setHgrow(commandInput, Priority.ALWAYS);
-
-        BorderPane root = new BorderPane();
-        root.setCenter(outputArea);
-        root.setBottom(commandBox);
-
-        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-        stage.setTitle("Xian");
-        stage.setScene(scene);
-    }
-
-    private void handleCommand() {
-        String input = commandInput.getText();
+    @FXML
+    private void handleUserInput() {
+        String input = userInput.getText();
 
         if (input.isBlank()) {
             return;
         }
 
-        try {
-            String response = xian.executeCommand(input);
-            outputArea.appendText(response + System.lineSeparator());
-        } catch (XianException | IOException | NumberFormatException
-                | DateTimeParseException exception) {
-            outputArea.appendText(exception.getMessage() + System.lineSeparator());
+        if (input.equals("bye")) {
+            Platform.exit();
+            return;
         }
 
-        commandInput.clear();
+        dialogContainer.getChildren().add(
+                DialogBox.getUserDialog(input, userImage));
+
+        try {
+            String response = xian.executeCommand(input);
+            dialogContainer.getChildren().add(
+                    DialogBox.getXianDialog(response, xianImage, ""));
+        } catch (XianException | IOException | NumberFormatException
+                 | DateTimeParseException exception) {
+            dialogContainer.getChildren().add(
+                    DialogBox.getXianDialog(exception.getMessage(), xianImage, ""));
+        }
+
+        userInput.clear();
     }
 }

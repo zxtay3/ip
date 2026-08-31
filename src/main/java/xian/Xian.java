@@ -1,12 +1,11 @@
 package xian;
 
 import java.io.IOException;
-import java.time.format.DateTimeParseException;
 
 /**
- * Entry point for the Xian task management application.
- * Xian allows users to add, list, mark, unmark, and delete tasks
- * via text-based commands, with automatic saving to and loading from disk.
+ * Represents the backend of the Xian task management application.
+ * Xian allows users to add, list, mark, unmark, delete, and find tasks
+ * via commands, with automatic saving to and loading from disk.
  */
 public class Xian {
 
@@ -37,30 +36,12 @@ public class Xian {
     }
 
     /**
-     * Runs the main command loop, reading and executing user commands
-     * until the "bye" command is entered.
+     * Returns the formatted welcome message for the user interface.
+     *
+     * @return The formatted welcome response.
      */
-    public void run() {
-        while (true) {
-            String input = ui.readCommand();
-
-            if (input.equals("bye")) {
-                break;
-            }
-
-            try {
-                String response = executeCommand(input);
-                System.out.println(response);
-            } catch (XianException e) {
-                System.out.println(e.getMessage());
-            } catch (NumberFormatException e) {
-                System.out.println("Task number entered is not valid!! >:(");
-            } catch (DateTimeParseException e) {
-                System.out.println("Please enter date and time in correct format!! >:(");
-            } catch (IOException e) {
-                System.out.println("Unable to save your tasks :(");
-            }
-        }
+    public String getWelcomeMessage() {
+        return ui.formatWelcomeMessage();
     }
 
     /**
@@ -186,12 +167,4 @@ public class Xian {
         }
     }
 
-    /**
-     * Starts the Xian application.
-     *
-     * @param args command-line arguments (not used).
-     */
-    public static void main (String[]args){
-        new Xian("data/xian.txt").run();
-    }
 }

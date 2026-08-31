@@ -1,12 +1,12 @@
 package xian;
 
-import java.time.format.DateTimeParseException;
-
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.time.format.DateTimeParseException;
+
+import org.junit.jupiter.api.Test;
 
 public class ParserTest {
 
@@ -67,8 +67,7 @@ public class ParserTest {
 
     @Test
     public void parseDeadline_invalidDateFormat_throwsDateTimeParseException() {
-        assertThrows(DateTimeParseException.class,
-                () -> Parser.parseDeadline("project work /by not-a-date"));
+        assertThrows(DateTimeParseException.class, () -> Parser.parseDeadline("project work /by not-a-date"));
     }
 
     @Test

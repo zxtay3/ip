@@ -13,8 +13,8 @@ import java.util.List;
  * Deals with loading tasks from the save file and saving tasks to the save file.
  */
 public class Storage {
-    private final Path path;
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
+    private final Path path;
 
     /**
      * Creates a Storage instance that reads from and writes to the given file path.

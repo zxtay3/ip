@@ -95,18 +95,7 @@ public class Ui {
      * @return The formatted task-list response.
      */
     public String formatTaskList(TaskList tasks) {
-        StringBuilder response = new StringBuilder();
-        response.append("\tHere are the task in your list:\n");
-
-        for (int i = 0; i < tasks.getSize(); i++) {
-            response.append("\t")
-                    .append(i + 1)
-                    .append(". ")
-                    .append(tasks.get(i))
-                    .append("\n");
-        }
-
-        return response.toString();
+        return formatTasksWithHeader(tasks, "\tHere are the task in your list:\n");
     }
 
     /**
@@ -116,20 +105,33 @@ public class Ui {
      * @return The formatted matching-tasks response.
      */
     public String formatMatchingTasks(TaskList matchingTasks) {
-        StringBuilder response = new StringBuilder();
         if (matchingTasks.getSize() == 0) {
-            response.append("\tThere are no tasks that fit the description :(");
-            return response.toString();
+            return "\tThere are no tasks that fit the description :(";
         }
 
-        response.append("\tHere are the matching tasks in your list:\n");
-        for (int i = 0; i < matchingTasks.getSize(); i++) {
+        return formatTasksWithHeader(
+                matchingTasks,
+                "\tHere are the matching tasks in your list:\n");
+    }
+
+    /**
+     * Returns a numbered list of the given tasks preceded by the supplied header.
+     *
+     * @param tasks the tasks to include in the response.
+     * @param header the header to place before the numbered tasks.
+     * @return the formatted task-list response.
+     */
+    private String formatTasksWithHeader(TaskList tasks, String header) {
+        StringBuilder response = new StringBuilder(header);
+
+        for (int i = 0; i < tasks.getSize(); i++) {
             response.append("\t")
                     .append(i + 1)
                     .append(". ")
-                    .append(matchingTasks.get(i))
+                    .append(tasks.get(i))
                     .append("\n");
         }
+
         return response.toString();
     }
 

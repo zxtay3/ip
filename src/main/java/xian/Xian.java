@@ -154,6 +154,8 @@ public class Xian {
      * @throws IOException If a task update cannot be saved.
      */
     public String executeCommand(String input) throws XianException, IOException {
+        assert tasks != null : "Task list must be initialized before executing commands";
+
         if (input.equals("list")) {
             return ui.formatTaskList(tasks);
         } else {

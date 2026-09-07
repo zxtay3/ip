@@ -26,6 +26,52 @@ public class Storage {
     }
 
     /**
+     * Creates a task from its saved-file fields.
+     *
+     * @param parts the fields read from one saved task line.
+     * @return the task represented by the saved fields.
+     * @throws XianException if the saved task type is invalid.
+     */
+    private Task parseTask(String[] parts) throws XianException {
+        return switch (parts[0]) {
+            case "T" -> new Todo(parts[2]);
+            case "D" -> new Deadline(parts[2], LocalDateTime.parse(parts[3], DATE_TIME_FORMAT));
+            case "E" -> new Event(
+                    parts[2],
+                    LocalDateTime.parse(parts[3], DATE_TIME_FORMAT),
+                    LocalDateTime.parse(parts[4], DATE_TIME_FORMAT)
+            );
+            default -> throw new XianException("Unable to load invalid saved task type");
+        };
+    }
+
+    /**
+     * Converts a task into its saved-file representation.
+     *
+     * @param task the task to convert.
+     * @return the serialized task line.
+     * @throws XianException if the task type is invalid.
+     */
+    private String serializeTask(Task task) throws XianException {
+        String doneStatus = task.getStatusCode();
+
+        if (task instanceof Todo) {
+            return "T | " + doneStatus + " | " + task.getDescription();
+        } else if (task instanceof Deadline deadline) {
+            return "D | " + doneStatus + " | "
+                    + task.getDescription() + " | "
+                    + deadline.getByDate().format(DATE_TIME_FORMAT);
+        } else if (task instanceof Event event) {
+            return "E | " + doneStatus + " | "
+                    + task.getDescription() + " | "
+                    + event.getFrom().format(DATE_TIME_FORMAT) + " | "
+                    + event.getTo().format(DATE_TIME_FORMAT);
+        } else {
+            throw new XianException("Invalid task type cannot be saved");
+        }
+    }
+
+    /**
      * Loads tasks from the save file into a new TaskList.
      * If the save file does not exist, an empty TaskList is returned.
      *
@@ -44,18 +90,7 @@ public class Storage {
 
         for (String line : lines) {
             String[] parts = line.split(" \\| ");
-            Task task;
-
-            switch (parts[0]) {
-                case "T" -> task = new Todo(parts[2]);
-                case "D" -> task = new Deadline(parts[2], LocalDateTime.parse(parts[3], DATE_TIME_FORMAT));
-                case "E" -> task = new Event(
-                        parts[2],
-                        LocalDateTime.parse(parts[3], DATE_TIME_FORMAT),
-                        LocalDateTime.parse(parts[4], DATE_TIME_FORMAT)
-                );
-                default -> throw new XianException("Unable to load invalid saved task type");
-            }
+            Task task = parseTask(parts);
 
             if (parts[1].equals("1")) {
                 task.mark();
@@ -84,22 +119,7 @@ public class Storage {
         List<String> lines = new ArrayList<>();
 
         for (Task task : tasks) {
-            String doneStatus = task.getStatusCode();
-
-            if (task instanceof Todo) {
-                lines.add("T | " + doneStatus + " | " + task.getDescription());
-            } else if (task instanceof Deadline deadline) {
-                lines.add("D | " + doneStatus + " | "
-                        + task.getDescription() + " | "
-                        + deadline.getByDate().format(DATE_TIME_FORMAT));
-            } else if (task instanceof Event event) {
-                lines.add("E | " + doneStatus + " | "
-                        + task.getDescription() + " | "
-                        + event.getFrom().format(DATE_TIME_FORMAT) + " | "
-                        + event.getTo().format(DATE_TIME_FORMAT));
-            } else {
-                throw new XianException("Invalid task type cannot be saved");
-            }
+            lines.add(serializeTask(task));
         }
 
         Files.write(path, lines);

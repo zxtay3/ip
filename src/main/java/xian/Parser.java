@@ -63,6 +63,32 @@ public class Parser {
     }
 
     /**
+     * Splits task arguments and validates that the expected number of non-blank parts is present.
+     *
+     * @param remainder the task arguments to split.
+     * @param splitRegex the regular expression used to split the arguments.
+     * @param expectedParts the number of parts required by the task format.
+     * @return the validated task argument parts.
+     * @throws XianException if the arguments do not contain the expected parts.
+     */
+    private static String[] splitAndValidateTaskArguments(String remainder,
+            String splitRegex, int expectedParts) throws XianException {
+        String[] taskParts = remainder.split(splitRegex);
+
+        if (taskParts.length != expectedParts) {
+            throw new XianException("Please ensure the format of the task is correct!! >:(");
+        }
+
+        for (String taskPart : taskParts) {
+            if (taskPart.isBlank()) {
+                throw new XianException("Please ensure the format of the task is correct!! >:(");
+            }
+        }
+
+        return taskParts;
+    }
+
+    /**
      * Creates a Deadline task from the given arguments, which should be in the
      * format {@code <description> /by <d/M/yyyy HHmm>}.
      *
@@ -71,11 +97,7 @@ public class Parser {
      * @throws XianException if the arguments are not in the expected format.
      */
     public static Task parseDeadline(String remainder) throws XianException {
-        String[] taskDate = remainder.split(" /by ");
-
-        if (taskDate.length != 2 || taskDate[0].isBlank() || taskDate[1].isBlank()) {
-            throw new XianException("Please ensure the format of the task is correct!! >:(");
-        }
+        String[] taskDate = splitAndValidateTaskArguments(remainder, " /by ", 2);
 
         LocalDateTime by = LocalDateTime.parse(taskDate[1], DATE_TIME_FORMAT);
         return new Deadline(taskDate[0], by);
@@ -90,12 +112,7 @@ public class Parser {
      * @throws XianException if the arguments are not in the expected format.
      */
     public static Task parseEvent(String remainder) throws XianException {
-        String[] taskDate = remainder.split(" /from | /to ");
-
-        if (taskDate.length != 3 || taskDate[0].isBlank()
-                || taskDate[1].isBlank() || taskDate[2].isBlank()) {
-            throw new XianException("Please ensure the format of the task is correct!! >:(");
-        }
+        String[] taskDate = splitAndValidateTaskArguments(remainder, " /from | /to ", 3);
 
         LocalDateTime from = LocalDateTime.parse(taskDate[1], DATE_TIME_FORMAT);
         LocalDateTime to = LocalDateTime.parse(taskDate[2], DATE_TIME_FORMAT);

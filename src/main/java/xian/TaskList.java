@@ -69,13 +69,11 @@ public class TaskList implements Iterable<Task> {
         TaskList matchingTasks = new TaskList();
         String lowerCaseKeyword = keyword.toLowerCase(Locale.ROOT);
 
-        for (Task task : tasks) {
-            String lowerCaseDescription = task.getDescription().toLowerCase(Locale.ROOT);
-
-            if (lowerCaseDescription.contains(lowerCaseKeyword)) {
-                matchingTasks.add(task);
-            }
-        }
+        tasks.stream()
+                .filter(task -> task.getDescription()
+                        .toLowerCase(Locale.ROOT)
+                        .contains(lowerCaseKeyword))
+                .forEach(matchingTasks::add);
 
         return matchingTasks;
     }

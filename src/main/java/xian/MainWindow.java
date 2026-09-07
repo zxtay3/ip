@@ -61,6 +61,8 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     private void handleUserInput() {
+        assert xian != null : "Xian backend must be set before handling input";
+
         String input = userInput.getText();
 
         if (input.isBlank()) {

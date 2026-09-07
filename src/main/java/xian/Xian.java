@@ -45,6 +45,24 @@ public class Xian {
     }
 
     /**
+     * Parses and validates the task index supplied to a task-modifying command.
+     *
+     * @param remainder the arguments containing the task index.
+     * @param action the action to include in the validation error message.
+     * @return the validated one-based task index.
+     * @throws XianException if the task index is invalid.
+     */
+    private int parseAndValidateTaskIndex(String remainder, String action) throws XianException {
+        int index = Parser.parseIndex(remainder);
+
+        if (index < 1 || index > tasks.getSize()) {
+            throw new XianException("Hello?! Please enter a valid item to " + action + "  >:(");
+        }
+
+        return index;
+    }
+
+    /**
      * Handles the "mark" command by marking the specified task as done
      * and saving the updated task list.
      *
@@ -53,12 +71,7 @@ public class Xian {
      * @throws XianException if the given index is invalid.
      */
     private String handleMark(String remainder) throws IOException, XianException {
-        int index = Parser.parseIndex(remainder);
-
-        if (index < 1 || index > tasks.getSize()) {
-            throw new XianException("Hello?! Please enter a valid item to mark  >:(");
-        }
-
+        int index = parseAndValidateTaskIndex(remainder, "mark");
         Task task = tasks.get(index - 1);
         task.mark();
         storage.save(tasks);
@@ -75,12 +88,7 @@ public class Xian {
      * @throws XianException if the given index is invalid.
      */
     private String handleUnmark(String remainder) throws IOException, XianException {
-        int index = Parser.parseIndex(remainder);
-
-        if (index < 1 || index > tasks.getSize()) {
-            throw new XianException("Hello?! Please enter a valid item to unmark  >:(");
-        }
-
+        int index = parseAndValidateTaskIndex(remainder, "unmark");
         Task task = tasks.get(index - 1);
         task.unmark();
         storage.save(tasks);
@@ -97,12 +105,7 @@ public class Xian {
      * @throws XianException if the given index is invalid.
      */
     private String handleDelete(String remainder) throws IOException, XianException {
-        int index = Parser.parseIndex(remainder);
-
-        if (index < 1 || index > tasks.getSize()) {
-            throw new XianException("Hello?! Please enter a valid item to delete  >:(");
-        }
-
+        int index = parseAndValidateTaskIndex(remainder, "delete");
         Task task = tasks.delete(index);
         storage.save(tasks);
 

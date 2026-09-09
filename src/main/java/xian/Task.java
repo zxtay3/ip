@@ -30,6 +30,15 @@ public class Task {
     }
 
     /**
+     * Updates this task's description.
+     *
+     * @param description the new task description.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
      * Returns the status icon representing whether this task is done.
      *
      * @return {@code "X"} if the task is done, or a blank space {@code " "} otherwise.

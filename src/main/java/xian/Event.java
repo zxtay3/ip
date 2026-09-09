@@ -34,12 +34,30 @@ public class Event extends Task {
     }
 
     /**
+     * Updates the date and time at which this event starts.
+     *
+     * @param from the new event start date and time.
+     */
+    public void setFrom(LocalDateTime from) {
+        this.from = from;
+    }
+
+    /**
      * Returns the date and time this event ends.
      *
      * @return the end date and time.
      */
     public LocalDateTime getTo() {
         return this.to;
+    }
+
+    /**
+     * Updates the date and time at which this event ends.
+     *
+     * @param to the new event end date and time.
+     */
+    public void setTo(LocalDateTime to) {
+        this.to = to;
     }
 
     /**

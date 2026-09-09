@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class Deadline extends Task {
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
-    private final LocalDateTime byDate;
+    private LocalDateTime byDate;
 
     /**
      * Creates a new Deadline task with the given description and due date/time.
@@ -28,6 +28,15 @@ public class Deadline extends Task {
      */
     public LocalDateTime getByDate() {
         return this.byDate;
+    }
+
+    /**
+     * Updates the date and time by which this task should be completed.
+     *
+     * @param byDate the new deadline date and time.
+     */
+    public void setByDate(LocalDateTime byDate) {
+        this.byDate = byDate;
     }
 
     /**

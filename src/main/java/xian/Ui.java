@@ -89,6 +89,19 @@ public class Ui {
     }
 
     /**
+     * Returns a formatted message confirming that a task has been updated.
+     *
+     * @param task the task after its details were updated.
+     * @return the formatted task-update response.
+     */
+    public String formatTaskUpdated(Task task) {
+        return "\tI've updated this task:\n"
+                + "\t "
+                + task
+                + "\n";
+    }
+
+    /**
      * Returns a formatted list of every task currently in the given task list.
      *
      * @param tasks The task list to format.

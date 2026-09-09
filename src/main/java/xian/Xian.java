@@ -146,6 +146,48 @@ public class Xian {
     }
 
     /**
+     * Updates one field of an existing task and saves the updated task list.
+     *
+     * @param remainder the task index, field, and new value.
+     * @return the formatted task-update response.
+     * @throws IOException if the updated task list cannot be saved.
+     * @throws XianException if the update arguments or task type are invalid.
+     */
+    private String handleUpdate(String remainder) throws IOException, XianException {
+        String[] updateParts = Parser.parseUpdate(remainder);
+        int index = parseAndValidateTaskIndex(updateParts[0], "update");
+        Task task = tasks.get(index - 1);
+        String field = updateParts[1];
+        String value = updateParts[2];
+
+        switch (field) {
+        case "desc" -> task.setDescription(value);
+        case "by" -> {
+            if (!(task instanceof Deadline deadline)) {
+                throw new XianException("The 'by' field can only be updated for a deadline task :( ");
+            }
+            deadline.setByDate(Parser.parseDateTime(value));
+        }
+        case "from" -> {
+            if (!(task instanceof Event event)) {
+                throw new XianException("The 'from' field can only be updated for an event task :( ");
+            }
+            event.setFrom(Parser.parseDateTime(value));
+        }
+        case "to" -> {
+            if (!(task instanceof Event event)) {
+                throw new XianException("The 'to' field can only be updated for an event task :( ");
+            }
+            event.setTo(Parser.parseDateTime(value));
+        }
+        default -> throw new XianException("Please specify a valid field to update :( ");
+        }
+
+        storage.save(tasks);
+        return ui.formatTaskUpdated(task);
+    }
+
+    /**
      * Executes a user command and returns the formatted response.
      *
      * @param input The user command to execute.
@@ -167,6 +209,7 @@ public class Xian {
                 case "mark" -> handleMark(remainder);
                 case "unmark" -> handleUnmark(remainder);
                 case "delete" -> handleDelete(remainder);
+                case "update" -> handleUpdate(remainder);
                 default -> handleAddTask(command, remainder);
             };
         }

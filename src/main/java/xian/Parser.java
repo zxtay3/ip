@@ -53,6 +53,17 @@ public class Parser {
     }
 
     /**
+     * Parses a date and time using the application's supported format.
+     *
+     * @param dateTime the date and time to parse.
+     * @return the parsed date and time.
+     * @throws DateTimeParseException if the date and time has an invalid format.
+     */
+    public static LocalDateTime parseDateTime(String dateTime) {
+        return LocalDateTime.parse(dateTime, DATE_TIME_FORMAT);
+    }
+
+    /**
      * Creates a Todo task from the given arguments.
      *
      * @param remainder the description of the todo task.
@@ -60,6 +71,24 @@ public class Parser {
      */
     public static Task parseTodo(String remainder) {
         return new Todo(remainder);
+    }
+
+    /**
+     * Parses the index, field, and value supplied to an update command.
+     *
+     * @param remainder the arguments supplied to the update command.
+     * @return the update index, field, and value in separate array elements.
+     * @throws XianException if the update arguments are incomplete.
+     */
+    public static String[] parseUpdate(String remainder) throws XianException {
+        String[] updateParts = remainder.split(" ", 3);
+
+        if (updateParts.length != 3 || updateParts[0].isBlank()
+                || updateParts[1].isBlank() || updateParts[2].isBlank()) {
+            throw new XianException("Please ensure the update format is correct!! >:(");
+        }
+
+        return updateParts;
     }
 
     /**
@@ -99,7 +128,7 @@ public class Parser {
     public static Task parseDeadline(String remainder) throws XianException {
         String[] taskDate = splitAndValidateTaskArguments(remainder, " /by ", 2);
 
-        LocalDateTime by = LocalDateTime.parse(taskDate[1], DATE_TIME_FORMAT);
+        LocalDateTime by = parseDateTime(taskDate[1]);
         return new Deadline(taskDate[0], by);
     }
 
@@ -114,8 +143,8 @@ public class Parser {
     public static Task parseEvent(String remainder) throws XianException {
         String[] taskDate = splitAndValidateTaskArguments(remainder, " /from | /to ", 3);
 
-        LocalDateTime from = LocalDateTime.parse(taskDate[1], DATE_TIME_FORMAT);
-        LocalDateTime to = LocalDateTime.parse(taskDate[2], DATE_TIME_FORMAT);
+        LocalDateTime from = parseDateTime(taskDate[1]);
+        LocalDateTime to = parseDateTime(taskDate[2]);
 
         return new Event(taskDate[0], from, to);
     }

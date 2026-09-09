@@ -53,6 +53,20 @@ public class ParserTest {
     }
 
     @Test
+    public void parseUpdate_validInput_returnsUpdateParts() throws XianException {
+        String[] updateParts = Parser.parseUpdate("2 by 12/9/2026 1800");
+
+        assertEquals("2", updateParts[0]);
+        assertEquals("by", updateParts[1]);
+        assertEquals("12/9/2026 1800", updateParts[2]);
+    }
+
+    @Test
+    public void parseUpdate_missingValue_throwsXianException() {
+        assertThrows(XianException.class, () -> Parser.parseUpdate("2 desc"));
+    }
+
+    @Test
     public void parseDeadline_validInput_returnsDeadlineWithCorrectFields() throws XianException {
         Task t = Parser.parseDeadline("project work /by 2/12/2019 1800");
         assertInstanceOf(Deadline.class, t);

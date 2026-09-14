@@ -70,10 +70,15 @@ public class MainWindow extends AnchorPane {
         String input = userInput.getText();
 
         if (input.isBlank()) {
+            dialogContainer.getChildren().add(
+                    DialogBox.getXianDialog(
+                            "Hmm, please enter a command before sending it.",
+                            xianImage,
+                            "error"));
             return;
         }
 
-        if (input.equals("bye")) {
+        if (input.trim().equalsIgnoreCase("bye")) {
             Platform.exit();
             return;
         }

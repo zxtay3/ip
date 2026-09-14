@@ -1,6 +1,7 @@
 package xian;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 /**
  * Represents the backend of the Xian task management application.
@@ -53,10 +54,17 @@ public class Xian {
      * @throws XianException if the task index is invalid.
      */
     private int parseAndValidateTaskIndex(String remainder, String action) throws XianException {
-        int index = Parser.parseIndex(remainder);
+        int index;
+
+        try {
+            index = Parser.parseIndex(remainder);
+        } catch (NumberFormatException exception) {
+            throw new XianException("Please enter a whole-number task index to " + action + ".");
+        }
 
         if (index < 1 || index > tasks.getSize()) {
-            throw new XianException("Hello?! Please enter a valid item to " + action + "  >:(");
+            throw new XianException("Please enter a task number from 1 to "
+                    + tasks.getSize() + " to " + action + ".");
         }
 
         return index;
@@ -161,7 +169,10 @@ public class Xian {
         String value = updateParts[2];
 
         switch (field) {
-        case "desc" -> task.setDescription(value);
+        case "desc" -> {
+            Parser.validateTaskDescription(value);
+            task.setDescription(value);
+        }
         case "by" -> {
             if (!(task instanceof Deadline deadline)) {
                 throw new XianException("The 'by' field can only be updated for a deadline task :( ");
@@ -172,13 +183,17 @@ public class Xian {
             if (!(task instanceof Event event)) {
                 throw new XianException("The 'from' field can only be updated for an event task :( ");
             }
-            event.setFrom(Parser.parseDateTime(value));
+            LocalDateTime newFrom = Parser.parseDateTime(value);
+            Parser.validateEventTimeRange(newFrom, event.getTo());
+            event.setFrom(newFrom);
         }
         case "to" -> {
             if (!(task instanceof Event event)) {
                 throw new XianException("The 'to' field can only be updated for an event task :( ");
             }
-            event.setTo(Parser.parseDateTime(value));
+            LocalDateTime newTo = Parser.parseDateTime(value);
+            Parser.validateEventTimeRange(event.getFrom(), newTo);
+            event.setTo(newTo);
         }
         default -> throw new XianException("Please specify a valid field to update :( ");
         }
@@ -193,16 +208,31 @@ public class Xian {
      * @param input The user command to execute.
      * @return The formatted response for the command.
      * @throws XianException If the command or its arguments are invalid.
-     * @throws IOException If a task update cannot be saved.
+     * @throws IOException If task data cannot be saved.
      */
     public String executeCommand(String input) throws XianException, IOException {
         assert tasks != null : "Task list must be initialized before executing commands";
 
-        if (input.equals("list")) {
+        String normalizedInput = Parser.normalizeInput(input);
+
+        if (normalizedInput.equals("list")) {
             return ui.formatTaskList(tasks);
         } else {
-            String command = Parser.getCommandWord(input);
-            String remainder = Parser.getArguments(input);
+            String command = Parser.getCommandWord(normalizedInput);
+
+            if (command.equals("list")) {
+                throw new XianException("The list command does not take any arguments.");
+            }
+
+            if (!command.equals("find") && !command.equals("mark")
+                    && !command.equals("unmark") && !command.equals("delete")
+                    && !command.equals("update") && !command.equals("todo")
+                    && !command.equals("deadline") && !command.equals("event")) {
+                throw new XianException("I don't recognize '" + command
+                        + "'. Try 'list' or another supported command.");
+            }
+
+            String remainder = Parser.getArguments(normalizedInput);
 
             return switch (command) {
                 case "find" -> handleFind(remainder);

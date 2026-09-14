@@ -2,6 +2,8 @@ package xian;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 /**
  * Deals with interpreting raw user input into structured commands and task data.
@@ -11,7 +13,41 @@ import java.time.format.DateTimeFormatter;
  */
 public class Parser {
 
-    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
+    private static final DateTimeFormatter DATE_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("d/M/uuuu HHmm")
+                    .withResolverStyle(ResolverStyle.STRICT);
+
+    /**
+     * Normalizes a command by removing surrounding whitespace and collapsing
+     * repeated whitespace between command arguments.
+     *
+     * @param input the raw user input.
+     * @return the normalized command input.
+     * @throws XianException if the input is null or blank.
+     */
+    public static String normalizeInput(String input) throws XianException {
+        if (input == null || input.isBlank()) {
+            throw new XianException("Please enter a command, such as 'list' or 'todo <description>'.");
+        }
+
+        return input.trim().replaceAll("\\s+", " ");
+    }
+
+    /**
+     * Validates that a task description is present and safe to save.
+     *
+     * @param description the task description to validate.
+     * @throws XianException if the description is blank or contains the storage delimiter.
+     */
+    public static void validateTaskDescription(String description) throws XianException {
+        if (description == null || description.isBlank()) {
+            throw new XianException("A task description cannot be blank.");
+        }
+
+        if (description.contains(" | ")) {
+            throw new XianException("A task description cannot contain ' | '.");
+        }
+    }
 
     /**
      * Returns the command word (the first token) from the given user input.
@@ -20,7 +56,7 @@ public class Parser {
      * @return the command word.
      */
     public static String getCommandWord(String input) {
-        return input.split(" ", 2)[0];
+        return input.trim().split("\\s+", 2)[0];
     }
 
     /**
@@ -32,7 +68,11 @@ public class Parser {
      * @throws XianException if no arguments are provided after the command word.
      */
     public static String getArguments(String input) throws XianException {
-        String[] parts = input.split(" ", 2);
+        if (input == null || input.isBlank()) {
+            throw new XianException("Please remember to state task!! >:(");
+        }
+
+        String[] parts = input.trim().split("\\s+", 2);
 
         if (parts.length < 2 || parts[1].isBlank()) {
             throw new XianException("Please remember to state task!! >:(");
@@ -68,8 +108,10 @@ public class Parser {
      *
      * @param remainder the description of the todo task.
      * @return the created Todo task.
+     * @throws XianException if the description is blank or contains the storage delimiter.
      */
-    public static Task parseTodo(String remainder) {
+    public static Task parseTodo(String remainder) throws XianException {
+        validateTaskDescription(remainder);
         return new Todo(remainder);
     }
 
@@ -81,7 +123,11 @@ public class Parser {
      * @throws XianException if the update arguments are incomplete.
      */
     public static String[] parseUpdate(String remainder) throws XianException {
-        String[] updateParts = remainder.split(" ", 3);
+        if (remainder == null || remainder.isBlank()) {
+            throw new XianException("Please ensure the update format is correct!! >:(");
+        }
+
+        String[] updateParts = remainder.trim().split("\\s+", 3);
 
         if (updateParts.length != 3 || updateParts[0].isBlank()
                 || updateParts[1].isBlank() || updateParts[2].isBlank()) {
@@ -124,9 +170,11 @@ public class Parser {
      * @param remainder the arguments containing the description and due date/time.
      * @return the created Deadline task.
      * @throws XianException if the arguments are not in the expected format.
+     * @throws DateTimeParseException if the due date/time is invalid.
      */
     public static Task parseDeadline(String remainder) throws XianException {
         String[] taskDate = splitAndValidateTaskArguments(remainder, " /by ", 2);
+        validateTaskDescription(taskDate[0]);
 
         LocalDateTime by = parseDateTime(taskDate[1]);
         return new Deadline(taskDate[0], by);
@@ -138,14 +186,32 @@ public class Parser {
      *
      * @param remainder the arguments containing the description, start time, and end time.
      * @return the created Event task.
-     * @throws XianException if the arguments are not in the expected format.
+     * @throws XianException if the arguments are not in the expected format or the time range is
+     *                       invalid.
+     * @throws DateTimeParseException if the start or end date/time is invalid.
      */
     public static Task parseEvent(String remainder) throws XianException {
         String[] taskDate = splitAndValidateTaskArguments(remainder, " /from | /to ", 3);
+        validateTaskDescription(taskDate[0]);
 
         LocalDateTime from = parseDateTime(taskDate[1]);
         LocalDateTime to = parseDateTime(taskDate[2]);
+        validateEventTimeRange(from, to);
 
         return new Event(taskDate[0], from, to);
+    }
+
+    /**
+     * Validates that an event starts before it ends.
+     *
+     * @param from the event start date and time.
+     * @param to the event end date and time.
+     * @throws XianException if either date is null or the start is not before the end.
+     */
+    public static void validateEventTimeRange(LocalDateTime from, LocalDateTime to)
+            throws XianException {
+        if (from == null || to == null || !from.isBefore(to)) {
+            throw new XianException("An event must start before it ends.");
+        }
     }
 }

@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +15,9 @@ import java.util.List;
  * Deals with loading tasks from the save file and saving tasks to the save file.
  */
 public class Storage {
-    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
+    private static final DateTimeFormatter DATE_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("d/M/uuuu HHmm")
+                    .withResolverStyle(ResolverStyle.STRICT);
     private final Path path;
 
     /**
@@ -30,19 +34,50 @@ public class Storage {
      *
      * @param parts the fields read from one saved task line.
      * @return the task represented by the saved fields.
-     * @throws XianException if the saved task type is invalid.
+     * @throws XianException if the saved task type or fields are invalid.
      */
     private Task parseTask(String[] parts) throws XianException {
+        if (parts.length < 2 || !(parts[1].equals("0") || parts[1].equals("1"))) {
+            throw new XianException("Unable to load malformed saved task data");
+        }
+
         return switch (parts[0]) {
-            case "T" -> new Todo(parts[2]);
-            case "D" -> new Deadline(parts[2], LocalDateTime.parse(parts[3], DATE_TIME_FORMAT));
-            case "E" -> new Event(
-                    parts[2],
-                    LocalDateTime.parse(parts[3], DATE_TIME_FORMAT),
-                    LocalDateTime.parse(parts[4], DATE_TIME_FORMAT)
-            );
+            case "T" -> {
+                validateSavedTaskParts(parts, 3);
+                yield new Todo(parts[2]);
+            }
+            case "D" -> {
+                validateSavedTaskParts(parts, 4);
+                yield new Deadline(parts[2], LocalDateTime.parse(parts[3], DATE_TIME_FORMAT));
+            }
+            case "E" -> {
+                validateSavedTaskParts(parts, 5);
+                LocalDateTime from = LocalDateTime.parse(parts[3], DATE_TIME_FORMAT);
+                LocalDateTime to = LocalDateTime.parse(parts[4], DATE_TIME_FORMAT);
+                Parser.validateEventTimeRange(from, to);
+                yield new Event(parts[2], from, to);
+            }
             default -> throw new XianException("Unable to load invalid saved task type");
         };
+    }
+
+    /**
+     * Validates the number and content of fields in one saved task record.
+     *
+     * @param parts the fields read from the saved task record.
+     * @param expectedParts the expected number of fields.
+     * @throws XianException if a field is missing or blank.
+     */
+    private void validateSavedTaskParts(String[] parts, int expectedParts) throws XianException {
+        if (parts.length != expectedParts) {
+            throw new XianException("Unable to load malformed saved task data");
+        }
+
+        for (String part : parts) {
+            if (part.isBlank()) {
+                throw new XianException("Unable to load malformed saved task data");
+            }
+        }
     }
 
     /**
@@ -77,7 +112,7 @@ public class Storage {
      *
      * @return the loaded TaskList.
      * @throws IOException if the save file cannot be read.
-     * @throws XianException if a line in the save file has an invalid task type.
+     * @throws XianException if a line in the save file is malformed or invalid.
      */
     public TaskList load() throws IOException, XianException {
         TaskList tasks = new TaskList();
@@ -88,9 +123,17 @@ public class Storage {
 
         List<String> lines = Files.readAllLines(path);
 
-        for (String line : lines) {
-            String[] parts = line.split(" \\| ");
-            Task task = parseTask(parts);
+        for (int lineNumber = 0; lineNumber < lines.size(); lineNumber++) {
+            String line = lines.get(lineNumber);
+            String[] parts = line.split(" \\| ", -1);
+
+            Task task;
+            try {
+                task = parseTask(parts);
+            } catch (DateTimeParseException exception) {
+                throw new XianException("Unable to load an invalid date on line "
+                        + (lineNumber + 1) + ".");
+            }
 
             if (parts[1].equals("1")) {
                 task.mark();

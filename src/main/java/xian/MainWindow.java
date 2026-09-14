@@ -43,6 +43,7 @@ public class MainWindow extends AnchorPane {
 
     /**
      * Provides the Xian backend used by this controller.
+     * Displays the welcome message and focuses the input field after setup.
      *
      * @param xian The Xian backend instance.
      */
@@ -54,10 +55,12 @@ public class MainWindow extends AnchorPane {
                         xian.getWelcomeMessage(),
                         xianImage,
                         ""));
+        Platform.runLater(userInput::requestFocus);
     }
 
     /**
      * Handles a command submitted through the input field or Send button.
+     * Keeps invalid input in the field so that the user can correct it.
      */
     @FXML
     private void handleUserInput() {
@@ -84,7 +87,8 @@ public class MainWindow extends AnchorPane {
         } catch (XianException | IOException | NumberFormatException
                  | DateTimeParseException exception) {
             dialogContainer.getChildren().add(
-                    DialogBox.getXianDialog(exception.getMessage(), xianImage, ""));
+                    DialogBox.getXianDialog(exception.getMessage(), xianImage, "error"));
+            return;
         }
 
         userInput.clear();

@@ -66,7 +66,8 @@ public class DialogBox extends HBox {
      *
      * @param text Xian's response.
      * @param image Xian's profile image.
-     * @param commandType The command category used to style the response.
+     * @param commandType The command category used to style the response, such as
+     *                    {@code error}.
      * @return A dialog box displaying Xian's response.
      */
     public static DialogBox getXianDialog(String text, Image image, String commandType) {
@@ -79,7 +80,7 @@ public class DialogBox extends HBox {
     /**
      * Applies a CSS style based on the command category.
      *
-     * @param commandType The command category used to choose the style.
+     * @param commandType The command category used to choose the style, if any.
      */
     private void changeDialogStyle(String commandType) {
         switch (commandType) {
@@ -91,6 +92,9 @@ public class DialogBox extends HBox {
                 break;
             case "delete":
                 dialog.getStyleClass().add("delete-label");
+                break;
+            case "error":
+                dialog.getStyleClass().add("error-label");
                 break;
             default:
                 // Do nothing.

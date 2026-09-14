@@ -60,7 +60,8 @@ public class MainWindow extends AnchorPane {
 
     /**
      * Handles a command submitted through the input field or Send button.
-     * Keeps invalid input in the field so that the user can correct it.
+     * Displays errors in a distinct response style and keeps invalid input in
+     * the field so that the user can correct it.
      */
     @FXML
     private void handleUserInput() {
@@ -87,7 +88,11 @@ public class MainWindow extends AnchorPane {
         } catch (XianException | IOException | NumberFormatException
                  | DateTimeParseException exception) {
             dialogContainer.getChildren().add(
-                    DialogBox.getXianDialog(exception.getMessage(), xianImage, "error"));
+                    DialogBox.getXianDialog(
+                            "Hmm, I couldn't process that command:\n"
+                                    + exception.getMessage(),
+                            xianImage,
+                            "error"));
             return;
         }
 

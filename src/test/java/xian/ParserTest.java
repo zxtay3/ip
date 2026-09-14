@@ -47,6 +47,11 @@ public class ParserTest {
     }
 
     @Test
+    public void normalizeInput_nullInput_throwsXianException() {
+        assertThrows(XianException.class, () -> Parser.normalizeInput(null));
+    }
+
+    @Test
     public void parseIndex_validNumber_returnsCorrectInt() {
         assertEquals(3, Parser.parseIndex("3"));
     }

@@ -30,4 +30,20 @@ public class StorageTest {
 
         assertThrows(XianException.class, () -> new Storage(saveFile.toString()).load());
     }
+
+    @Test
+    public void load_invalidStatusInSaveFile_throwsXianException() throws IOException {
+        Path saveFile = temporaryDirectory.resolve("xian.txt");
+        Files.writeString(saveFile, "T | 2 | read book");
+
+        assertThrows(XianException.class, () -> new Storage(saveFile.toString()).load());
+    }
+
+    @Test
+    public void load_missingFieldInSaveFile_throwsXianException() throws IOException {
+        Path saveFile = temporaryDirectory.resolve("xian.txt");
+        Files.writeString(saveFile, "T | 0");
+
+        assertThrows(XianException.class, () -> new Storage(saveFile.toString()).load());
+    }
 }

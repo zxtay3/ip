@@ -119,6 +119,14 @@ public class XianTest {
     }
 
     @Test
+    public void executeCommand_unknownCommand_throwsXianException() {
+        Xian xian = createXian();
+
+        assertThrows(XianException.class,
+                () -> xian.executeCommand("archive old tasks"));
+    }
+
+    @Test
     public void executeCommand_updateEventEndBeforeStart_throwsXianException()
             throws IOException, XianException {
         Xian xian = createXian();

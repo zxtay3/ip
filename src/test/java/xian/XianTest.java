@@ -22,7 +22,7 @@ public class XianTest {
 
         String response = xian.executeCommand("update 1 desc read textbook");
 
-        assertEquals("\tI've updated this task:\n\t [T][ ] read textbook\n", response);
+        assertEquals("\tDone — I've updated this task:\n\t [T][ ] read textbook\n", response);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class XianTest {
 
         String response = xian.executeCommand("update 1 by 11/9/2026 1800");
 
-        assertEquals("\tI've updated this task:\n"
+        assertEquals("\tDone — I've updated this task:\n"
                 + "\t [D][ ] submit report (by: 11/9/2026 1800)\n", response);
     }
 
@@ -43,7 +43,7 @@ public class XianTest {
 
         String response = xian.executeCommand("update 1 to 10/9/2026 1700");
 
-        assertEquals("\tI've updated this task:\n"
+        assertEquals("\tDone — I've updated this task:\n"
                 + "\t [E][ ] project meeting (from: 10/9/2026 1400 to: 10/9/2026 1700)\n", response);
     }
 

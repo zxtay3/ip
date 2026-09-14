@@ -1,7 +1,7 @@
 package xian;
 
 /**
- * Deals with formatting responses and displaying messages to the user.
+ * Formats Xian's responses for display in the user interface.
  */
 public class Ui {
 
@@ -14,7 +14,7 @@ public class Ui {
             """;
     private static final String BOT_NAME = "XIAN";
     /**
-     * Returns a formatted welcome banner and greeting message.
+     * Returns a formatted welcome banner and greeting from Xian, the user's study companion.
      *
      * @return The formatted welcome response.
      */
@@ -22,8 +22,8 @@ public class Ui {
         return BANNER
                 + "Hello, I'm "
                 + BOT_NAME
-                + "!\n"
-                + "What can I do for you today?\n";
+                + ", your study companion!\n"
+                + "Ready when you are. Try `list` to see your tasks.\n";
     }
 
     /**
@@ -33,7 +33,7 @@ public class Ui {
      * @return The formatted task-marking response.
      */
     public String formatTaskMark(Task task) {
-        return "\tOK, I've marked this task as done: \n"
+        return "\tNice work — I've marked this task as done:\n"
                 + "\t "
                 + task
                 + "\n";
@@ -46,7 +46,7 @@ public class Ui {
      * @return The formatted task-unmarking response.
      */
     public String formatTaskUnmark(Task task) {
-        return "\tOK, I've marked this task as not done yet: \n"
+        return "\tNo problem — I've marked this task as not done:\n"
                 + "\t "
                 + task
                 + "\n";
@@ -61,13 +61,13 @@ public class Ui {
      * @return The formatted task-deletion response.
      */
     public String formatTaskDelete(Task task, TaskList tasks) {
-        return "\tNoted!! I have deleted the item from the list\n"
+        return "\tDone — I've removed this task from your list:\n"
                 + "\t "
                 + task
                 + "\n"
-                + "\tNow you have "
+                + "\tYou now have "
                 + tasks.getSize()
-                + " tasks in the list\n";
+                + " tasks left.\n";
     }
 
     /**
@@ -79,13 +79,13 @@ public class Ui {
      * @return The formatted task-addition response.
      */
     public String formatTaskAdded(Task task, TaskList tasks) {
-        return "\tGot it. I've added this task: \n"
+        return "\tGot it — I've added this task:\n"
                 + "\t "
                 + task
                 + "\n"
-                + "\tNow you have "
+                + "\tYou now have "
                 + tasks.getSize()
-                + " tasks in the list.\n";
+                + " tasks.\n";
     }
 
     /**
@@ -95,7 +95,7 @@ public class Ui {
      * @return the formatted task-update response.
      */
     public String formatTaskUpdated(Task task) {
-        return "\tI've updated this task:\n"
+        return "\tDone — I've updated this task:\n"
                 + "\t "
                 + task
                 + "\n";
@@ -108,7 +108,7 @@ public class Ui {
      * @return The formatted task-list response.
      */
     public String formatTaskList(TaskList tasks) {
-        return formatTasksWithHeader(tasks, "\tHere are the task in your list:\n");
+        return formatTasksWithHeader(tasks, "\tHere are your tasks:\n");
     }
 
     /**
@@ -119,12 +119,12 @@ public class Ui {
      */
     public String formatMatchingTasks(TaskList matchingTasks) {
         if (matchingTasks.getSize() == 0) {
-            return "\tThere are no tasks that fit the description :(";
+            return "\tI couldn't find a task matching that description.";
         }
 
         return formatTasksWithHeader(
                 matchingTasks,
-                "\tHere are the matching tasks in your list:\n");
+                "\tI found these matching tasks:\n");
     }
 
     /**

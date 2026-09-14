@@ -1,9 +1,11 @@
 package xian;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.format.DateTimeParseException;
 
@@ -145,6 +147,16 @@ public class XianTest {
         Xian xian = createXian();
 
         assertThrows(XianException.class, () -> xian.executeCommand("list extra"));
+    }
+
+    @Test
+    public void getStartupWarning_malformedSaveFile_returnsWarning() throws IOException {
+        Path saveFile = temporaryDirectory.resolve("xian.txt");
+        Files.writeString(saveFile, "T | 2 | read book");
+
+        Xian xian = new Xian(saveFile.toString());
+
+        assertFalse(xian.getStartupWarning().isBlank());
     }
 
     private Xian createXian() {

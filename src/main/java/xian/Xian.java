@@ -13,11 +13,14 @@ public class Xian {
     private final Storage storage;
     private final Ui ui;
     private TaskList tasks;
+    /** Stores a warning for the GUI when saved task data cannot be loaded. */
+    private String startupWarning = "";
 
     /**
      * Creates a Xian instance, initializing the UI and loading
      * previously saved tasks from the given file path.
-     * If loading fails, starts with an empty task list instead.
+     * If loading fails, starts with an empty task list instead and records a
+     * warning for the user interface.
      *
      * @param filePath the path to the file used for saving/loading tasks.
      */
@@ -27,11 +30,15 @@ public class Xian {
 
         try {
             tasks = storage.load();
-        } catch (IOException e) {
+        } catch (IOException exception) {
+            startupWarning = "I couldn't read your saved tasks, so I started with an empty list. "
+                    + "Please check that the data file is accessible.";
             System.out.println("Error loading saved tasks");
             tasks = new TaskList();
-        } catch (XianException e) {
-            System.out.println(e.getMessage());
+        } catch (XianException exception) {
+            startupWarning = "Your saved task data looks invalid, so I started with an empty list. "
+                    + "Please check the data file before continuing.";
+            System.out.println(exception.getMessage());
             tasks = new TaskList();
         }
     }
@@ -43,6 +50,15 @@ public class Xian {
      */
     public String getWelcomeMessage() {
         return ui.formatWelcomeMessage();
+    }
+
+    /**
+     * Returns a warning produced while loading saved tasks, if any.
+     *
+     * @return the startup warning, or an empty string when loading succeeded.
+     */
+    public String getStartupWarning() {
+        return startupWarning;
     }
 
     /**

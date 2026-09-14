@@ -43,7 +43,8 @@ public class MainWindow extends AnchorPane {
 
     /**
      * Provides the Xian backend used by this controller.
-     * Displays the welcome message and focuses the input field after setup.
+     * Displays the welcome message and any startup warning, then focuses the
+     * input field after setup.
      *
      * @param xian The Xian backend instance.
      */
@@ -55,6 +56,15 @@ public class MainWindow extends AnchorPane {
                         xian.getWelcomeMessage(),
                         xianImage,
                         ""));
+
+        if (!xian.getStartupWarning().isBlank()) {
+            dialogContainer.getChildren().add(
+                    DialogBox.getXianDialog(
+                            xian.getStartupWarning(),
+                            xianImage,
+                            "error"));
+        }
+
         Platform.runLater(userInput::requestFocus);
     }
 

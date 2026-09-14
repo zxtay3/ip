@@ -30,6 +30,8 @@ public class Main extends Application {
 
         stage.setTitle("Xian");
         stage.setScene(scene);
+        stage.setMinWidth(360);
+        stage.setMinHeight(400);
         stage.show();
     }
 }

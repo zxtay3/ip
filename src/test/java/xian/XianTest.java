@@ -66,6 +66,79 @@ public class XianTest {
                 () -> xian.executeCommand("update 1 by not-a-date"));
     }
 
+    @Test
+    public void executeCommand_blankInput_throwsXianException() {
+        Xian xian = createXian();
+
+        assertThrows(XianException.class, () -> xian.executeCommand("   "));
+    }
+
+    @Test
+    public void executeCommand_nonNumericTaskIndex_throwsXianException() throws IOException, XianException {
+        Xian xian = createXian();
+        xian.executeCommand("todo read book");
+
+        assertThrows(XianException.class,
+                () -> xian.executeCommand("delete one"));
+    }
+
+    @Test
+    public void executeCommand_eventEndBeforeStart_throwsXianException() {
+        Xian xian = createXian();
+
+        assertThrows(XianException.class,
+                () -> xian.executeCommand(
+                        "event project meeting /from 10/9/2026 1700 /to 10/9/2026 1600"));
+    }
+
+    @Test
+    public void executeCommand_invalidDate_throwsXianException() {
+        Xian xian = createXian();
+
+        assertThrows(XianException.class,
+                () -> xian.executeCommand("deadline submit report /by 31/2/2026 1800"));
+    }
+
+    @Test
+    public void executeCommand_extraWhitespace_acceptsNormalizedCommand()
+            throws IOException, XianException {
+        Xian xian = createXian();
+
+        xian.executeCommand("  todo   read   book  ");
+
+        assertEquals("\tHere are your tasks:\n"
+                + "\t1. [T][ ] read book\n", xian.executeCommand("list"));
+    }
+
+    @Test
+    public void executeCommand_storageDelimiterInDescription_throwsXianException() {
+        Xian xian = createXian();
+
+        assertThrows(XianException.class,
+                () -> xian.executeCommand("todo read | book"));
+    }
+
+    @Test
+    public void executeCommand_updateEventEndBeforeStart_throwsXianException()
+            throws IOException, XianException {
+        Xian xian = createXian();
+        xian.executeCommand("event project meeting /from 10/9/2026 1400 /to 10/9/2026 1600");
+
+        assertThrows(XianException.class,
+                () -> xian.executeCommand("update 1 to 10/9/2026 1300"));
+
+        assertEquals("\tHere are your tasks:\n"
+                + "\t1. [E][ ] project meeting (from: 10/9/2026 1400 to: 10/9/2026 1600)\n",
+                xian.executeCommand("list"));
+    }
+
+    @Test
+    public void executeCommand_listWithArguments_throwsXianException() {
+        Xian xian = createXian();
+
+        assertThrows(XianException.class, () -> xian.executeCommand("list extra"));
+    }
+
     private Xian createXian() {
         Path saveFile = temporaryDirectory.resolve("xian.txt");
         return new Xian(saveFile.toString());

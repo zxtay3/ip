@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,16 @@ public class ParserTest {
     }
 
     @Test
+    public void normalizeInput_extraWhitespace_returnsNormalizedInput() throws XianException {
+        assertEquals("todo read book", Parser.normalizeInput("  todo   read   book  "));
+    }
+
+    @Test
+    public void normalizeInput_blankInput_throwsXianException() {
+        assertThrows(XianException.class, () -> Parser.normalizeInput("   "));
+    }
+
+    @Test
     public void parseIndex_validNumber_returnsCorrectInt() {
         assertEquals(3, Parser.parseIndex("3"));
     }
@@ -46,10 +57,15 @@ public class ParserTest {
     }
 
     @Test
-    public void parseTodo_validInput_returnsTodoWithCorrectDescription() {
+    public void parseTodo_validInput_returnsTodoWithCorrectDescription() throws XianException {
         Task t = Parser.parseTodo("read book");
         assertInstanceOf(Todo.class, t);
         assertEquals("read book", t.getDescription());
+    }
+
+    @Test
+    public void parseTodo_storageDelimiterInDescription_throwsXianException() {
+        assertThrows(XianException.class, () -> Parser.parseTodo("read | book"));
     }
 
     @Test
@@ -95,5 +111,13 @@ public class ParserTest {
     @Test
     public void parseEvent_missingToKeyword_throwsXianException() {
         assertThrows(XianException.class, () -> Parser.parseEvent("partyyy /from 21/3/2021 1200"));
+    }
+
+    @Test
+    public void validateEventTimeRange_endBeforeStart_throwsXianException() {
+        LocalDateTime from = LocalDateTime.of(2021, 3, 21, 18, 0);
+        LocalDateTime to = LocalDateTime.of(2021, 3, 21, 12, 0);
+
+        assertThrows(XianException.class, () -> Parser.validateEventTimeRange(from, to));
     }
 }

@@ -54,8 +54,8 @@ public class XianTest {
         Xian xian = createXian();
         xian.executeCommand("todo read book");
 
-        assertThrows(XianException.class,
-                () -> xian.executeCommand("update 1 by 11/9/2026 1800"));
+        assertThrows(XianException.class, () ->
+                xian.executeCommand("update 1 by 11/9/2026 1800"));
     }
 
     @Test
@@ -64,8 +64,8 @@ public class XianTest {
         Xian xian = createXian();
         xian.executeCommand("deadline submit report /by 10/9/2026 1800");
 
-        assertThrows(DateTimeParseException.class,
-                () -> xian.executeCommand("update 1 by not-a-date"));
+        assertThrows(DateTimeParseException.class, () ->
+                xian.executeCommand("update 1 by not-a-date"));
     }
 
     @Test
@@ -80,25 +80,24 @@ public class XianTest {
         Xian xian = createXian();
         xian.executeCommand("todo read book");
 
-        assertThrows(XianException.class,
-                () -> xian.executeCommand("delete one"));
+        assertThrows(XianException.class, () ->
+                xian.executeCommand("delete one"));
     }
 
     @Test
     public void executeCommand_eventEndBeforeStart_throwsXianException() {
         Xian xian = createXian();
 
-        assertThrows(XianException.class,
-                () -> xian.executeCommand(
-                        "event project meeting /from 10/9/2026 1700 /to 10/9/2026 1600"));
+        assertThrows(XianException.class, () ->
+                xian.executeCommand("event project meeting /from 10/9/2026 1700 /to 10/9/2026 1600"));
     }
 
     @Test
-    public void executeCommand_invalidDate_throwsXianException() {
+    public void executeCommand_invalidDate_throwsDateTimeParseException() {
         Xian xian = createXian();
 
-        assertThrows(XianException.class,
-                () -> xian.executeCommand("deadline submit report /by 31/2/2026 1800"));
+        assertThrows(DateTimeParseException.class, () ->
+                xian.executeCommand("deadline submit report /by 31/2/2026 1800"));
     }
 
     @Test
@@ -116,16 +115,16 @@ public class XianTest {
     public void executeCommand_storageDelimiterInDescription_throwsXianException() {
         Xian xian = createXian();
 
-        assertThrows(XianException.class,
-                () -> xian.executeCommand("todo read | book"));
+        assertThrows(XianException.class, () ->
+                xian.executeCommand("todo read | book"));
     }
 
     @Test
     public void executeCommand_unknownCommand_throwsXianException() {
         Xian xian = createXian();
 
-        assertThrows(XianException.class,
-                () -> xian.executeCommand("archive old tasks"));
+        assertThrows(XianException.class, () ->
+                xian.executeCommand("archive old tasks"));
     }
 
     @Test
@@ -134,8 +133,8 @@ public class XianTest {
         Xian xian = createXian();
         xian.executeCommand("event project meeting /from 10/9/2026 1400 /to 10/9/2026 1600");
 
-        assertThrows(XianException.class,
-                () -> xian.executeCommand("update 1 to 10/9/2026 1300"));
+        assertThrows(XianException.class, () ->
+                xian.executeCommand("update 1 to 10/9/2026 1300"));
 
         assertEquals("\tHere are your tasks:\n"
                 + "\t1. [E][ ] project meeting (from: 10/9/2026 1400 to: 10/9/2026 1600)\n",

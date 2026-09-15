@@ -185,33 +185,33 @@ public class Xian {
         String value = updateParts[2];
 
         switch (field) {
-        case "desc" -> {
-            Parser.validateTaskDescription(value);
-            task.setDescription(value);
-        }
-        case "by" -> {
-            if (!(task instanceof Deadline deadline)) {
-                throw new XianException("The 'by' field can only be updated for a deadline task :( ");
+            case "desc" -> {
+                Parser.validateTaskDescription(value);
+                task.setDescription(value);
             }
-            deadline.setByDate(Parser.parseDateTime(value));
-        }
-        case "from" -> {
-            if (!(task instanceof Event event)) {
-                throw new XianException("The 'from' field can only be updated for an event task :( ");
+            case "by" -> {
+                if (!(task instanceof Deadline deadline)) {
+                    throw new XianException("The 'by' field can only be updated for a deadline task :( ");
+                }
+                deadline.setByDate(Parser.parseDateTime(value));
             }
-            LocalDateTime newFrom = Parser.parseDateTime(value);
-            Parser.validateEventTimeRange(newFrom, event.getTo());
-            event.setFrom(newFrom);
-        }
-        case "to" -> {
-            if (!(task instanceof Event event)) {
-                throw new XianException("The 'to' field can only be updated for an event task :( ");
+            case "from" -> {
+                if (!(task instanceof Event event)) {
+                    throw new XianException("The 'from' field can only be updated for an event task :( ");
+                }
+                LocalDateTime newFrom = Parser.parseDateTime(value);
+                Parser.validateEventTimeRange(newFrom, event.getTo());
+                event.setFrom(newFrom);
             }
-            LocalDateTime newTo = Parser.parseDateTime(value);
-            Parser.validateEventTimeRange(event.getFrom(), newTo);
-            event.setTo(newTo);
-        }
-        default -> throw new XianException("Please specify a valid field to update :( ");
+            case "to" -> {
+                if (!(task instanceof Event event)) {
+                    throw new XianException("The 'to' field can only be updated for an event task :( ");
+                }
+                LocalDateTime newTo = Parser.parseDateTime(value);
+                Parser.validateEventTimeRange(event.getFrom(), newTo);
+                event.setTo(newTo);
+            }
+            default -> throw new XianException("Please specify a valid field to update :( ");
         }
 
         storage.save(tasks);

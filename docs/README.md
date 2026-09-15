@@ -3,6 +3,8 @@
 Xian is a friendly task-management chatbot. Use the text field and press
 Enter or click **Send** to submit a command.
 
+<img src="Ui.png" alt="Xian user interface" width="400">
+
 ## Commands
 
 ### Add tasks
